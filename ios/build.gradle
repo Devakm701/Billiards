@@ -1,19 +1,19 @@
-sourceSets.main.java.srcDirs = [ "src/" ]
+// sourceSets.main.java.srcDirs = [ "src/" ]
 
-sourceCompatibility = '1.7'
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+// sourceCompatibility = '1.7'
+// [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-ext {
-	mainClassName = "com.billiards.IOSLauncher"
-}
+// ext {
+// 	mainClassName = "com.billiards.IOSLauncher"
+// }
 
-launchIPhoneSimulator.dependsOn build
-launchIPadSimulator.dependsOn build
-launchIOSDevice.dependsOn build
-createIPA.dependsOn build
+// launchIPhoneSimulator.dependsOn build
+// launchIPadSimulator.dependsOn build
+// launchIOSDevice.dependsOn build
+// createIPA.dependsOn build
 
-robovm {
-	archs = "thumbv7:arm64"
-}
+// robovm {
+// 	archs = "thumbv7:arm64"
+// }
 
-eclipse.project.name = appName + "-ios"
+// eclipse.project.name = appName + "-ios"
