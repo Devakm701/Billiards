@@ -98,21 +98,21 @@ project(":html") {
     }
 }
 // uncomment for ios
-// project(":ios") {
-//     apply plugin: "java-library"
-//     apply plugin: "robovm"
+project(":ios") {
+    apply plugin: "java-library"
+    apply plugin: "robovm"
 
 
-//     dependencies {
-//         implementation project(":core")
-//         api "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
-//         api "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
-//         api "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
-//         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
-//         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-ios"
-//         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
-//         api "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
-//         // api "com.github.MrStahlfelge.gdx-websockets:common:1.1.0"
+    dependencies {
+        implementation project(":core")
+        api "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
+        api "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
+        api "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
+        api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-ios"
+        api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
+        api "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
+        // api "com.github.MrStahlfelge.gdx-websockets:common:1.1.0"
         
-//     }
-// }
+    }
+}
