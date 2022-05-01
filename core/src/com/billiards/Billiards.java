@@ -3,12 +3,15 @@ package com.billiards;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.physics.box2d.*;
 
 public class Billiards extends ApplicationAdapter {
     SpriteBatch batch;
     Texture table, background;
     PoolStick stick;
+    World world; // pool table width is ~20 times ball diameter, ball radius ~9-10 pixels, set ball radius to ~.25 meters in box2D & table width to ~10m 
     
     @Override
     public void create () {
@@ -16,6 +19,7 @@ public class Billiards extends ApplicationAdapter {
         table = new Texture("stolenTableCropped.png");
         background = new Texture("dimmerBackground.png");
         stick = new PoolStick("pool stick.png", 450f , 300f);
+        world = new World(new Vector2(0, 0), true);
     }
 
     @Override
