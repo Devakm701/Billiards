@@ -13,6 +13,10 @@ public class PoolStick extends Sprite {
     private float chargeDist = 0f;
     public final float HEIGHT;
     public final float WIDTH;
+    private final float MAX_CHARGE = 75f;
+    private float outCharge = 0f;
+    private boolean chargeAvailable = true;
+    private Ball cueBall;
 
     public PoolStick(String fileName, Vector2 origin) {
         super(new Texture(fileName));
@@ -33,11 +37,8 @@ public class PoolStick extends Sprite {
             return;
         }
         super.draw(batch);
-        if (Gdx.input.isButtonPressed(Buttons.RIGHT)) {
-            chargeDist += 2f;
-            super.setOrigin(WIDTH + Ball.RADIUS_PX + chargeDist, HEIGHT/2);
-            super.setPosition(origin.x - chargeDist - getWidth() - Ball.RADIUS_PX, origin.y - HEIGHT / 2);
-            super.draw(batch);
+        if (Gdx.input.isButtonPressed(Buttons.RIGHT) && chargeAvailable) {
+            drawCharged(2f, batch);
         }
         else if (chargeDist == 0 && Gdx.input.isTouched()) {
             super.setOrigin(WIDTH + Ball.RADIUS_PX, HEIGHT/2);
@@ -47,15 +48,27 @@ public class PoolStick extends Sprite {
             super.draw(batch);
         } 
         else {
-            chargeDist = Math.max(chargeDist - 7, 0);
-            super.setOrigin(WIDTH + Ball.RADIUS_PX + chargeDist, HEIGHT/2);
-            super.setPosition(origin.x - chargeDist - getWidth() - Ball.RADIUS_PX, origin.y - HEIGHT / 2);
-            super.draw(batch);
+            
+            drawCharged(-7, batch);
+            if (outCharge > 15 && chargeAvailable) {
+                System.out.println(outCharge);
+                launchCueBall(outCharge / MAX_CHARGE);
+            }
+            outCharge = 0f;
+            chargeAvailable = false;
+            if (chargeDist == 0) {
+                chargeAvailable = true;
+            }
         }
     }
 
-    private void drawCharged() {
-        
+    private void drawCharged(float dist, Batch batch) {
+        chargeDist += dist;
+        chargeDist = Math.min(Math.max(chargeDist, 0), MAX_CHARGE );
+        outCharge = Math.max(outCharge, chargeDist);
+        super.setOrigin(WIDTH + Ball.RADIUS_PX + chargeDist, HEIGHT/2);
+        super.setPosition(origin.x - chargeDist - getWidth() - Ball.RADIUS_PX, origin.y - HEIGHT / 2);
+        super.draw(batch);
     }
 
     public void setVisible(boolean visibility) {
@@ -68,5 +81,13 @@ public class PoolStick extends Sprite {
         super.translate(y - WIDTH, y - HEIGHT / 2);  
     }
 
-    
+    public void setCueBall(Ball ball) {
+        cueBall = ball;
+    }
+
+    private void launchCueBall(float v) {
+        v *= 50;
+        double rad = Math.toRadians(getRotation());
+        cueBall.setVelocity((float)( v * Math.cos(rad) ),(float)( v * Math.sin(rad) ) );
+    }
 }
