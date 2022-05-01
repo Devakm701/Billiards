@@ -13,7 +13,7 @@ public class PoolStick extends Sprite {
     public PoolStick(String fileName, Vector2 origin) {
         super(new Texture(fileName));
         this.origin = origin; 
-        super.translate(origin.x - super.getWidth(), origin.y - super.getHeight() / 2);   
+        super.translate(origin.x - super.getWidth() - Ball.RADIUS_PX, origin.y - super.getHeight() / 2);   
     }
 
     public PoolStick(String fileName, float x, float y) {
@@ -27,7 +27,8 @@ public class PoolStick extends Sprite {
         }
         super.draw(batch);
         if (Gdx.input.isTouched()) {
-            super.setOrigin(super.getWidth(), super.getHeight()/2);
+            super.setOrigin(super.getWidth() + Ball.RADIUS_PX, super.getHeight()/2);
+            
             super.setRotation((float)Math.toDegrees(Math.atan2(origin.y - Gdx.input.getY(), Gdx.input.getX() - origin.x)) + 180f);
             // System.out.println(super.getRotation()); // direction ouput
             super.draw(batch);

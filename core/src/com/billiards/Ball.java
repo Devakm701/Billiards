@@ -16,6 +16,7 @@ public class Ball {
 
     public Ball(float initX, float initY, String fileName, Body body) { //, int ballNum) { //add after balls are properly implemented
         ballSprite = new Sprite(new Texture(fileName));
+        ballSprite.translate(initX - RADIUS_PX, initY - RADIUS_PX);
     }
 
     public void move() {
