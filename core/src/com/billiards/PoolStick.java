@@ -54,6 +54,9 @@ public class PoolStick extends Sprite {
         }
     }
 
+    private void drawCharged() {
+        
+    }
 
     public void setVisible(boolean visibility) {
         visible = visibility;
