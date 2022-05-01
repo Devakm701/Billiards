@@ -22,7 +22,7 @@ public class Ball {
     }
 
     public void move(float x, float y) {
-        body.
+        ballBody.setTransform(x, y, ballBody.getAngle());
     }
 
     public Sprite getSprite() {
