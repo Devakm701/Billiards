@@ -1,6 +1,7 @@
 package com.billiards;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -8,15 +9,21 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 public class PoolStick extends Sprite {
-    private Vector2 origin;
-    private boolean visible = true;
-    private float chargeDist = 0f;
+    
     public final float HEIGHT;
     public final float WIDTH;
     private final float MAX_CHARGE = 75f;
+    private final Input IN = Gdx.input;
+    private Vector2 origin;
+    private Ball cueBall;
+    private Vector2 startPoint;
+    private float chargeDist = 0f;
     private float outCharge = 0f;
     private boolean chargeAvailable = true;
-    private Ball cueBall;
+    private boolean visible = true;
+    private boolean altControl = true;
+    
+    
 
     public PoolStick(String fileName, Vector2 origin) {
         super(new Texture(fileName));
@@ -37,23 +44,38 @@ public class PoolStick extends Sprite {
             return;
         }
         super.draw(batch);
-        if (Gdx.input.isButtonPressed(Buttons.RIGHT) && chargeAvailable) {
-            drawCharged(2f, batch);
+        /*---- Checks if user wants to charge pool stick ----*/
+        if (!altControl && IN.isButtonPressed(Buttons.RIGHT) && chargeAvailable) {
+            drawCharged(chargeDist + 2f, batch);
         }
-        else if (chargeDist == 0 && Gdx.input.isTouched()) {
-            super.setOrigin(WIDTH + Ball.RADIUS_PX, HEIGHT/2);
-            super.setPosition(origin.x - WIDTH - Ball.RADIUS_PX, origin.y - HEIGHT / 2);
-            super.setRotation((float)Math.toDegrees(Math.atan2(origin.y - Gdx.input.getY(), Gdx.input.getX() - origin.x)) + 180f);
-            // System.out.println(super.getRotation()); // direction ouput
-            super.draw(batch);
+        else if (altControl && IN.isButtonPressed(Buttons.LEFT)) {
+            if (startPoint == null) { 
+                startPoint = new Vector2(IN.getX(), IN.getY()); // creates a new startpoint if one doesnt already exist
+            } else {
+                drawCharged(startPoint.dst(IN.getX(), IN.getY()), batch);
+            }
+        }
+        /*---- Checks if user wants to rotate pool stick ----*/
+        else if (chargeDist == 0) {
+            if (altControl || (!altControl && IN.isButtonPressed(Buttons.LEFT))) {
+                setOrigin(WIDTH + Ball.RADIUS_PX, HEIGHT/2);
+                setPosition(origin.x - WIDTH - Ball.RADIUS_PX, origin.y - HEIGHT / 2);
+                float rotation = (float)Math.toDegrees(Math.atan2(origin.y - IN.getY(), IN.getX() - origin.x));
+                if (!altControl) {
+                    rotation += 180f;
+                }
+                setRotation(rotation);
+                // System.out.println(super.getRotation()); // direction ouput
+                super.draw(batch);
+            }
         } 
         else {
-            
-            drawCharged(-7, batch);
+            startPoint = null;
+            drawCharged(chargeDist-7, batch);
             if (outCharge > 15 && chargeAvailable) {
-                System.out.println(outCharge);
+                System.out.println(outCharge); // debug code
                 launchCueBall(outCharge / MAX_CHARGE);
-            }
+            } 
             outCharge = 0f;
             chargeAvailable = false;
             if (chargeDist == 0) {
@@ -63,7 +85,7 @@ public class PoolStick extends Sprite {
     }
 
     private void drawCharged(float dist, Batch batch) {
-        chargeDist += dist;
+        chargeDist = dist;
         chargeDist = Math.min(Math.max(chargeDist, 0), MAX_CHARGE );
         outCharge = Math.max(outCharge, chargeDist);
         super.setOrigin(WIDTH + Ball.RADIUS_PX + chargeDist, HEIGHT/2);
@@ -78,7 +100,7 @@ public class PoolStick extends Sprite {
     public void move(float x , float y) {
         origin.x = x;
         origin.y = y;
-        super.translate(y - WIDTH, y - HEIGHT / 2);  
+        translate(y - WIDTH, y - HEIGHT / 2);  
     }
 
     public void setCueBall(Ball ball) {
@@ -89,5 +111,9 @@ public class PoolStick extends Sprite {
         v *= 50;
         double rad = Math.toRadians(getRotation());
         cueBall.setVelocity((float)( v * Math.cos(rad) ),(float)( v * Math.sin(rad) ) );
+    }
+
+    public void toggleAltControl() {
+        altControl = !altControl;
     }
 }
