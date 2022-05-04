@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -13,11 +14,12 @@ import com.badlogic.gdx.physics.box2d.*;
 public class Billiards extends ApplicationAdapter {
     private SpriteBatch batch;
     private Texture table, background;
+    private final float PHYSICS_RATE = 1f / 200;
     private PoolStick stick;
     // private LinkedList<Ball> balls; // after ball is complete
     private Ball cueBall;
     private World world; // pool table width is ~20 times ball diameter, ball radius ~9-10 pixels, set ball radius to ~.25 meters in box2D & table width to ~10m 
-
+    private OrthographicCamera cam;
     
     @Override
     public void create () {
@@ -31,6 +33,8 @@ public class Billiards extends ApplicationAdapter {
         ballDef.type = BodyDef.BodyType.DynamicBody;
         cueBall = new Ball(450, 300, "sphere-17_20x20.png", world.createBody(ballDef));
         stick.setCueBall(cueBall);
+        cam = new OrthographicCamera();
+        cam.setToOrtho(false, Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight() / 2f);
     }
 
     @Override
@@ -41,7 +45,7 @@ public class Billiards extends ApplicationAdapter {
         float dt = Gdx.graphics.getDeltaTime() * 1000;
         
         while (dt > 0 ) {
-            world.step(dt, 2, 2);
+            world.step(2, 6, 2);
             cueBall.update();
             dt -= 2;
         }
@@ -57,7 +61,8 @@ public class Billiards extends ApplicationAdapter {
         batch.dispose();
         table.dispose();
         background.dispose();
+        stick.getTexture().dispose();
+        cueBall.getSprite().getTexture().dispose();
     }
-
     
 }

@@ -20,7 +20,7 @@ public class Ball {
         center = new Vector2(initX, initY);
         ballBody = body;
         move(initX, initY);
-
+        //ballBody.setLinearDamping(0.0005f);
     }
 
     public void move(float x, float y) {
@@ -45,10 +45,11 @@ public class Ball {
         ballSprite.setPosition(x - RADIUS_PX, y - RADIUS_PX);
         center.x = x;
         center.y = y;
+        // System.out.println(ballBody.getLinearVelocity());
     }
 
     public void setVelocity(float vX, float vY) {
-        ballBody.setLinearVelocity(vX, vY);
+        ballBody.applyLinearImpulse(new Vector2(vX, vY), center, true);
         System.out.println("x: " + vX + " y: " + vY);
     }
 }
