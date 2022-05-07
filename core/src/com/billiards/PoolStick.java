@@ -6,7 +6,6 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Vector2;
 
 public class PoolStick extends Sprite {
@@ -14,7 +13,7 @@ public class PoolStick extends Sprite {
     public final float HEIGHT;
     public final float WIDTH;
     private final float MAX_CHARGE = 75f;
-    private final Input IN = Gdx.input;
+    private final Input in = Gdx.input;
     private Vector2 origin;
     private Ball cueBall;
     private Vector2 startPoint;
@@ -44,8 +43,8 @@ public class PoolStick extends Sprite {
         if (!visible) {
             return;
         }
-        boolean left = IN.isButtonPressed(Buttons.LEFT);
-        boolean right = IN.isButtonPressed(Buttons.RIGHT);
+        boolean left = in.isButtonPressed(Buttons.LEFT);
+        boolean right = in.isButtonPressed(Buttons.RIGHT);
 
         super.draw(batch);
         /*---- Checks if user wants to charge pool stick ----*/
@@ -55,17 +54,21 @@ public class PoolStick extends Sprite {
         // else // time-based charge mode, not as good
         if ((altControl && left || !altControl && right) && chargeAvailable) {
             if (startPoint == null) { 
-                startPoint = new Vector2(IN.getX(), IN.getY()); // creates a new startpoint if one doesnt already exist
+                startPoint = new Vector2(in.getX(), in.getY()); // creates a new startpoint if one doesnt already exist
             } else {
-                drawCharged(startPoint.dst(IN.getX(), IN.getY()), batch);
+                Vector2 vect = new Vector2(in.getX(), in.getY());
+                float dst = startPoint.dst(vect);
+                double rot = vect.sub(startPoint).angleRad() + Math.toRadians(getRotation()) + Math.PI; 
+                drawCharged((float) (dst * Math.cos(rot)), batch);
             }
         }
         /*---- Checks if user wants to rotate pool stick ----*/
         else if (chargeDist == 0) {
+            startPoint = null;
             if (altControl || (!altControl && left)) {
                 setOrigin(WIDTH + Ball.RADIUS_PX, HEIGHT/2);
                 setPosition(origin.x - WIDTH - Ball.RADIUS_PX, origin.y - HEIGHT / 2);
-                float rotation = (float)Math.toDegrees(Math.atan2(origin.y - IN.getY(), IN.getX() - origin.x));
+                float rotation = (float)Math.toDegrees(Math.atan2(origin.y - in.getY(), in.getX() - origin.x));
                 if (!altControl) {
                     rotation += 180f;
                 }
@@ -79,7 +82,7 @@ public class PoolStick extends Sprite {
             startPoint = null;
             drawCharged(chargeDist-7, batch);
             if (outCharge > 15 && chargeAvailable) {
-                System.out.println(outCharge); // debug code
+                // System.out.println(outCharge); // debug code
                 launchCueBall(outCharge / MAX_CHARGE);
             } 
             outCharge = 0f;

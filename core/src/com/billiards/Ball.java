@@ -45,12 +45,13 @@ public class Ball {
         ballSprite.setPosition(x - RADIUS_PX, y - RADIUS_PX);
         center.x = x;
         center.y = y;
+        // ballBody.applyLinearForce(ballBody.getLinearVelocity().scl(-0.2f)); friction for now
         // System.out.println(ballBody.getLinearVelocity());
     }
 
     public void setVelocity(float vX, float vY) {
         ballBody.applyLinearImpulse(new Vector2(vX, vY), center, true);
-        System.out.println("x: " + vX + " y: " + vY);
+        // System.out.println("x: " + vX + " y: " + vY);
     }
 
 

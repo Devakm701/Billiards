@@ -4,7 +4,9 @@ import java.util.LinkedList;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -12,35 +14,42 @@ import com.badlogic.gdx.physics.box2d.*;
 
 public class Billiards extends Game {
     private SpriteBatch batch;
+    public static final int WIDTH = 900;
+    public static final int HEIGHT = 600;
     private Texture table, background;
     private final float PHYSICS_DT = 16; // constant that can be reduced to increase the rate of the physics sim
     private PoolStick stick;
     // private LinkedList<Ball> balls; // after ball is complete
     private Ball cueBall;
     private World world; // pool table width is ~20 times ball diameter, ball radius ~9-10 pixels, set ball radius to ~.25 meters in box2D & table width to ~10m 
+    private LaunchMenu launchMenu;
     private Circle[] holes = new Circle[6];
+    //private static ShapeRenderer shapinator = new ShapeRenderer();
     
     @Override
     public void create () {
         //balls = new LinkedList<>();
-        //this.setScreen(new LaunchMenu()); // enable launch menu
+        background = new Texture("dimmerBackground.png");
+        launchMenu = new LaunchMenu(this, background);
+        this.setScreen(launchMenu); // enable launch menu 
+        this.getScreen().show();
         batch = new SpriteBatch();
         table = new Texture("stolenTableCropped.png");
-        background = new Texture("dimmerBackground.png");
         stick = new PoolStick("pool stick.png", 450f , 300f);
         world = new World(new Vector2(0, 0), true);
         BodyDef ballDef = new BodyDef();
         ballDef.type = BodyDef.BodyType.DynamicBody;
         cueBall = new Ball(450, 300, "sphere-17_20x20.png", world.createBody(ballDef));
         stick.setCueBall(cueBall);
-        // cam = new OrthographicCamera();
-        // cam.setToOrtho(false, Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight() / 2f); // useless ahh cam code, only useful moving game
     }
 
     @Override
     public void render () {
-        ScreenUtils.clear(0, 0, 0.2f, 0);
-
+        //ScreenUtils.clear(0, 0, 0.2f, 0); // i forgot what this does
+        if (this.getScreen() != null) {
+            super.render();
+            return;
+        }
         batch.begin();
         float dt = Gdx.graphics.getDeltaTime() * 1000;
         
@@ -54,6 +63,7 @@ public class Billiards extends Game {
         cueBall.getSprite().draw(batch);
         stick.draw(batch);
         batch.end();
+        
     }
     
     @Override
@@ -64,4 +74,9 @@ public class Billiards extends Game {
         stick.getTexture().dispose();
         cueBall.getSprite().getTexture().dispose();
     }
+
+    public SpriteBatch getBatch() {
+        return batch;
+    }
+
 }
