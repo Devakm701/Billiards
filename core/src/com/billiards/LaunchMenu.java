@@ -9,7 +9,7 @@ public class LaunchMenu implements Screen {
 
     // https://www.youtube.com/watch?v=67ZCQt8QpNA useful tutorial to familiarize yourself with screen interface
     // https://stackoverflow.com/questions/21488311/how-to-create-a-button-in-libgdx good idea on how to implement the buttons
-
+    // its not necessary to implement all of these because we wont be using all of these methods.
     public LaunchMenu(Game game) {
         super();
         billiardsGame = game;
