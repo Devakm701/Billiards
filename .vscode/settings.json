@@ -1,5 +1,5 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.configuration.updateBuildConfiguration": "automatic",
     "editor.inlayHints.fontFamily": "",
     "editor.inlayHints.fontSize": 0
 }

@@ -1,13 +1,19 @@
 package com.billiards;
 
+//import java.awt.Color;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -21,33 +27,24 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 public class LaunchMenu implements Screen {
 
     private Stage stage;
-    private Game billiardsGame;
+    private Billiards billiardsGame;
     private TextButton settingsButton;
     private TextButton exitButton;
     private TextButton launchButton;
     private BitmapFont font;
     private Image background;
     private Image title;
-    private TextureAtlas buttonAtlas;
-
-    // private Texture playButtonOn;
-    // private Texture playButtonOff;
-    // private Texture exitButtonOn;
-    // private Texture exitButtonOff;
+    private FreeTypeFontGenerator fontGenerator;
+    private FreeTypeFontGenerator.FreeTypeFontParameter fontParam;
+    private TextureAtlas buttonAtlas; // i think well make one atlas with all of the textures for the sake optimization
 
     // https://www.youtube.com/watch?v=67ZCQt8QpNA useful tutorial to familiarize
     // yourself with screen interface
     // https://stackoverflow.com/questions/21488311/how-to-create-a-button-in-libgdx
-    // good idea on how to implement the buttons
-    // its not necessary to implement all of these because we wont be using all of
-    // these methods.
-    // https://i.pinimg.com/originals/88/bf/2a/88bf2afe538d6109aba8410fda6fa2e7.jpg
-    // sex with baby penguins ??????????????????
-    // https://external-preview.redd.it/v1xGvjMe8Ssq92nPj_Az48S7_FZMPcxKMWjVfQY6A1w.gif?format=png8&s=daa9cd4989638e74f24803fc0ca3f7caba5955eb
+    // good idea on how to implement the buttons 
     // good reference links xD LOL
-    // send me a file and ping if you want to upload texture
-    // idk if you can add using live share
-    public LaunchMenu(Game game, Texture bg) {
+    // XD may 07 2022 br
+    public LaunchMenu(Billiards game, Texture bg) {
         super();
         billiardsGame = game;
         background = new Image(bg);
@@ -55,14 +52,26 @@ public class LaunchMenu implements Screen {
 
     @Override
     public void show() {
-        TextButtonStyle style = new TextButtonStyle();
         stage = new Stage();
+        title = new Image(new Texture("PooLogo2_50.png"));
         stage.addActor(background);
         background.setPosition(0f, 0f);
+        stage.addActor(title);
+        title.setPosition(Billiards.WIDTH / 2 - title.getWidth() / 2, Billiards.HEIGHT * 0.45f);
         Gdx.input.setInputProcessor(stage);
-        font = new BitmapFont(); // stage is not drawing for some reaason
+        
+        font = new BitmapFont();
+        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("Comic_Sans_MS.ttf")); // Oh no 
+        fontParam = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        fontParam.size = 16;
+        fontParam.borderWidth = 1;
+        fontParam.borderColor = Color.BLACK;
+        fontParam.color = Color.WHITE;
+        font = fontGenerator.generateFont(fontParam);
+        fontGenerator.dispose(); // idk if this makes difference but someone said theirs worked when they commented out 
         
         // Button Styler
+        TextButtonStyle style = new TextButtonStyle();
         style.font = font;
         style.up = new TextureRegionDrawable(new TextureRegion(new Texture("blue.png"))); // up is when button released
         style.down = new TextureRegionDrawable(new TextureRegion(new Texture("blueHover.png"))); // down is pressed
@@ -73,7 +82,7 @@ public class LaunchMenu implements Screen {
         launchButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                closeMenu();
+                billiardsGame.closeMenu();
             }
         });
         
@@ -83,6 +92,8 @@ public class LaunchMenu implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 System.out.println("hello"); // change when settings UI is implemented
+                billiardsGame.openSettings();
+                
             }
         });
         
@@ -106,14 +117,12 @@ public class LaunchMenu implements Screen {
         table.row();
         table.add(exitButton).size(250, 50).pad(10);
         stage.addActor(table); 
-        table.setPosition(Billiards.WIDTH / 2 - table.getWidth(), Billiards.HEIGHT / 4); // 
+        table.setPosition(Billiards.WIDTH / 2 - table.getWidth(), Billiards.HEIGHT * 0.25f); // 
         // table.setDebug(true); // debug lines
     }
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 
         stage.act(delta);
         stage.draw();
     }
@@ -143,10 +152,4 @@ public class LaunchMenu implements Screen {
         stage.dispose();
     }
 
-    /**
-     * method to exit out of the menu
-     */
-    private void closeMenu() {
-        billiardsGame.setScreen(null);
-    }
 }

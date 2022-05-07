@@ -1,16 +1,13 @@
 package com.billiards;
 
-import java.util.LinkedList;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.World;
 
 public class Billiards extends Game {
     private SpriteBatch batch;
@@ -23,19 +20,27 @@ public class Billiards extends Game {
     private Ball cueBall;
     private World world; // pool table width is ~20 times ball diameter, ball radius ~9-10 pixels, set ball radius to ~.25 meters in box2D & table width to ~10m 
     private LaunchMenu launchMenu;
+    private SettingsMenu settingsMenu;
     private Circle[] holes = new Circle[6];
     //private static ShapeRenderer shapinator = new ShapeRenderer();
     
+
     @Override
     public void create () {
         //balls = new LinkedList<>();
+        // Menu Initialization
         background = new Texture("dimmerBackground.png");
         launchMenu = new LaunchMenu(this, background);
+        settingsMenu = new SettingsMenu(this, background);
         this.setScreen(launchMenu); // enable launch menu 
         this.getScreen().show();
+        
+        // Textures
         batch = new SpriteBatch();
         table = new Texture("stolenTableCropped.png");
         stick = new PoolStick("pool stick.png", 450f , 300f);
+       
+        // Physics Engine
         world = new World(new Vector2(0, 0), true);
         BodyDef ballDef = new BodyDef();
         ballDef.type = BodyDef.BodyType.DynamicBody;
@@ -79,4 +84,15 @@ public class Billiards extends Game {
         return batch;
     }
 
+    public void openSettings() {
+        this.setScreen(settingsMenu);
+    }
+
+    public void openLaunchMenu() {
+        this.setScreen(launchMenu);
+    }
+
+    public void closeMenu() {
+        this.setScreen(null);
+    }
 }
