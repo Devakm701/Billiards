@@ -20,7 +20,7 @@ public class Ball {
         center = new Vector2(initX, initY);
         ballBody = body;
         move(initX, initY);
-        //ballBody.setLinearDamping(0.0005f);
+        //ballBody.setLinearDamping(0.0005f); // shitty friction function if we ever become lazy
     }
 
     public void move(float x, float y) {
@@ -51,5 +51,10 @@ public class Ball {
     public void setVelocity(float vX, float vY) {
         ballBody.applyLinearImpulse(new Vector2(vX, vY), center, true);
         System.out.println("x: " + vX + " y: " + vY);
+    }
+
+
+    public void setSpin() {
+
     }
 }
