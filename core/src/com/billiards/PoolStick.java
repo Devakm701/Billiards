@@ -21,7 +21,7 @@ public class PoolStick extends Sprite {
     private float outCharge = 0f;
     private boolean chargeAvailable = true;
     private boolean visible = true;
-    private boolean altControl = true;
+    private boolean altControl = false;
     
     
 
@@ -81,7 +81,7 @@ public class PoolStick extends Sprite {
         else {
             startPoint = null;
             drawCharged(chargeDist-7, batch);
-            if (outCharge > 15 && chargeAvailable) {
+            if (outCharge > 0 && chargeAvailable) {
                 // System.out.println(outCharge); // debug code
                 launchCueBall(outCharge / MAX_CHARGE);
             } 
@@ -117,7 +117,6 @@ public class PoolStick extends Sprite {
     }
 
     private void launchCueBall(float v) {
-        v *= 0.25f;
         double rad = Math.toRadians(getRotation());
         cueBall.setVelocity((float)( v * Math.cos(rad) ),(float)( v * Math.sin(rad) ) );
     }

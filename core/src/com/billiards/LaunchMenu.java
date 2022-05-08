@@ -1,23 +1,15 @@
 package com.billiards;
 
-//import java.awt.Color;
-
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -36,7 +28,6 @@ public class LaunchMenu implements Screen {
     private Image title;
     private FreeTypeFontGenerator fontGenerator;
     private FreeTypeFontGenerator.FreeTypeFontParameter fontParam;
-    private TextureAtlas buttonAtlas; // i think well make one atlas with all of the textures for the sake optimization
 
     // https://www.youtube.com/watch?v=67ZCQt8QpNA useful tutorial to familiarize
     // yourself with screen interface
@@ -52,6 +43,7 @@ public class LaunchMenu implements Screen {
 
     @Override
     public void show() {
+        // Create stage to draw and create background 
         stage = new Stage();
         title = new Image(new Texture("PooLogo2_50.png"));
         stage.addActor(background);
@@ -60,6 +52,7 @@ public class LaunchMenu implements Screen {
         title.setPosition(Billiards.WIDTH / 2 - title.getWidth() / 2, Billiards.HEIGHT * 0.45f);
         Gdx.input.setInputProcessor(stage);
         
+        // Change font
         font = new BitmapFont();
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("Comic_Sans_MS.ttf")); // Oh no 
         fontParam = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -107,8 +100,6 @@ public class LaunchMenu implements Screen {
             } 
         });
 
-        // Game Title
-        // title // should we make a logo with the title included
         // Table 
         Table table = new Table();
         table.add(launchButton).size(250, 50).pad(10);
@@ -118,7 +109,7 @@ public class LaunchMenu implements Screen {
         table.add(exitButton).size(250, 50).pad(10);
         stage.addActor(table); 
         table.setPosition(Billiards.WIDTH / 2 - table.getWidth(), Billiards.HEIGHT * 0.25f); // 
-        // table.setDebug(true); // debug lines
+        // table.setDebug(true); // uncomment to enable debug lines
     }
 
     @Override
