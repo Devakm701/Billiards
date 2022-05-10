@@ -2,8 +2,12 @@ package com.billiards;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -26,12 +30,11 @@ public class Billiards extends Game {
     private SettingsMenu settingsMenu;
     private Circle[] holes = new Circle[6];
     private long lastTime;
-    //private static ShapeRenderer drawShape = new ShapeRenderer();
+    private static ShapeRenderer drawShape;
     
 
     @Override
     public void create () {
-        
         // Menu Initialization
         background = new Texture("dimmerBackground.png");
         launchMenu = new LaunchMenu(this, background);
@@ -43,12 +46,12 @@ public class Billiards extends Game {
         batch = new SpriteBatch();
         table = new Texture("stolenTableCropped.png");
         stick = new PoolStick("pool stick.png", 450f , 300f);
-       
+
         // Create Box2D world
         world = new World(new Vector2(0, 0), true);
 
         // Create ground for friction
-        //FrictionJoint friction = new FrictionJoint(world, 0);
+        // FrictionJoint friction = new FrictionJoint(world, 0);
         // BodyDef sDef = new BodyDef();
         // sDef.type = BodyDef.BodyType.StaticBody;
         // sDef.position.set(0f, 0f);
@@ -64,8 +67,8 @@ public class Billiards extends Game {
         // jointDef.maxForce = 1f;
         // jointDef.maxTorque = 1f; // idk why tf this doesnt work
         
-
-
+        // Shape Shenanigans
+        drawShape = new ShapeRenderer();
 
         // Ball Creation
         // balls = new LinkedList<>();
@@ -86,6 +89,8 @@ public class Billiards extends Game {
 
         // Clear everything
         ballCircle.dispose();
+
+
         lastTime = System.currentTimeMillis();
     }
 
@@ -96,13 +101,8 @@ public class Billiards extends Game {
             super.render();
             return;
         }
-        batch.begin();
         
-        // while (dt > 0 ) {
-        //     world.step(PHYSICS_DT, 6, 2);
-        //     cueBall.update();
-        //     dt -= PHYSICS_DT;
-        // }
+        batch.begin();
         long currentTime = System.currentTimeMillis();
         world.step(currentTime - lastTime, 2, 2);
         cueBall.update();
@@ -113,7 +113,23 @@ public class Billiards extends Game {
         cueBall.getSprite().draw(batch);
         stick.draw(batch);
         batch.end();
-        
+        drawShape.begin(ShapeType.Line);
+        drawShape.setColor(new Color(1f,0,0,0.01f));
+        if (Gdx.input.isButtonPressed(Buttons.RIGHT)) { // creating debug lines for holes and walls of pool table
+            // drawShape.circle(450, 410, 15);
+            // drawShape.circle(150, 404, 17);
+            // drawShape.circle(749, 404, 17);
+            // drawShape.circle(450, 90, 15);
+            // drawShape.circle(150, 96, 17);
+            // drawShape.circle(749, 96, 17);
+            drawShape.line(183, 396, 430, 396);
+            drawShape.line(468, 396, 715, 396);
+            drawShape.line(183, 104, 430, 104);
+            drawShape.line(468, 104, 715, 104);
+            drawShape.line(158, 128, 158, 372);
+            drawShape.line(741, 128, 741, 372);
+        }
+        drawShape.end();
     }
     
     @Override
@@ -123,6 +139,7 @@ public class Billiards extends Game {
         background.dispose();
         stick.getTexture().dispose();
         cueBall.getSprite().getTexture().dispose();
+        drawShape.dispose();
     }
 
     public SpriteBatch getBatch() {
