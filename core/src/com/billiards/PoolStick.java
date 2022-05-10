@@ -40,6 +40,11 @@ public class PoolStick extends Sprite {
 
     @Override
     public void draw(Batch batch) {
+        if (!cueBall.isMoving() && !visible) {
+            setVisible(true);
+            move(cueBall.getCenter());
+            //drawCharged(0, batch);
+        }
         if (!visible) {
             return;
         }
@@ -65,10 +70,11 @@ public class PoolStick extends Sprite {
         /*---- Checks if user wants to rotate pool stick ----*/
         else if (chargeDist == 0) {
             startPoint = null;
+            setVisible(!cueBall.isMoving());
             if (altControl || (!altControl && left)) {
                 setOrigin(WIDTH + Ball.RADIUS_PX, HEIGHT/2);
                 setPosition(origin.x - WIDTH - Ball.RADIUS_PX, origin.y - HEIGHT / 2);
-                float rotation = (float)Math.toDegrees(Math.atan2(origin.y - in.getY(), in.getX() - origin.x));
+                float rotation = (float)Math.toDegrees(Math.atan2(Billiards.HEIGHT-origin.y - in.getY(), in.getX() - origin.x));
                 if (!altControl) {
                     rotation += 180f;
                 }
@@ -82,7 +88,7 @@ public class PoolStick extends Sprite {
             startPoint = null;
             drawCharged(chargeDist-7, batch);
             if (outCharge > 0 && chargeAvailable) {
-                // System.out.println(outCharge); // debug code
+                //System.out.println(outCharge / MAX_CHARGE); // debug code
                 launchCueBall(outCharge / MAX_CHARGE);
             } 
             outCharge = 0f;
@@ -106,17 +112,21 @@ public class PoolStick extends Sprite {
         visible = visibility;
     }
 
-    public void move(float x , float y) {
-        origin.x = x;
-        origin.y = y;
-        translate(y - WIDTH, y - HEIGHT / 2);  
+    public void move(Vector2 v) {
+        origin.x = v.x;
+        origin.y = v.y;
+        super.setOrigin(WIDTH + Ball.RADIUS_PX + chargeDist, HEIGHT/2);
+        super.setPosition(origin.x - chargeDist - getWidth() - Ball.RADIUS_PX, origin.y - HEIGHT / 2);
     }
 
     public void setCueBall(Ball ball) {
         cueBall = ball;
+        move(cueBall.getCenter());
     }
 
     private void launchCueBall(float v) {
+        v = (float)Math.pow(v, 3); // remaps v between 0 and 1 from linear to exponential curve, gives more natural feeling controls
+        v *= 0.40 * Ball.SCALE_INV;
         double rad = Math.toRadians(getRotation());
         cueBall.setVelocity((float)( v * Math.cos(rad) ),(float)( v * Math.sin(rad) ) );
     }

@@ -4,19 +4,13 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.joints.FrictionJoint;
-import com.badlogic.gdx.physics.box2d.joints.FrictionJointDef;
 
 public class Billiards extends Game {
     private SpriteBatch batch;
@@ -31,6 +25,7 @@ public class Billiards extends Game {
     private LaunchMenu launchMenu; // 1 px = .25 m
     private SettingsMenu settingsMenu;
     private Circle[] holes = new Circle[6];
+    private long lastTime;
     //private static ShapeRenderer drawShape = new ShapeRenderer();
     
 
@@ -91,7 +86,7 @@ public class Billiards extends Game {
 
         // Clear everything
         ballCircle.dispose();
-;
+        lastTime = System.currentTimeMillis();
     }
 
     @Override
@@ -102,14 +97,17 @@ public class Billiards extends Game {
             return;
         }
         batch.begin();
-        float dt = Gdx.graphics.getDeltaTime() * 1000;
         
-        while (dt > 0 ) {
-            world.step(PHYSICS_DT, 6, 2);
-            cueBall.update();
-            dt -= PHYSICS_DT;
-        }
-        world.step(Gdx.graphics.getDeltaTime(), 6, 2);
+        // while (dt > 0 ) {
+        //     world.step(PHYSICS_DT, 6, 2);
+        //     cueBall.update();
+        //     dt -= PHYSICS_DT;
+        // }
+        long currentTime = System.currentTimeMillis();
+        world.step(currentTime - lastTime, 2, 2);
+        cueBall.update();
+        lastTime = currentTime;
+        //world.step(Gdx.graphics.getDeltaTime(), 6, 2);
         batch.draw(background, 0, 0);
         batch.draw(table, 450 - table.getWidth() / 2, 0);
         cueBall.getSprite().draw(batch);
