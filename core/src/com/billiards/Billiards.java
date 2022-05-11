@@ -128,6 +128,9 @@ public class Billiards extends Game {
             drawShape.line(468, 104, 715, 104);
             drawShape.line(158, 128, 158, 372);
             drawShape.line(741, 128, 741, 372);
+            
+            
+            drawShape.line(900, 200, 800, 199);
             drawShape.line(741, 372, 771, 402);
         }
         drawShape.end();
