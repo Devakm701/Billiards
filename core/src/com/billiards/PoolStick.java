@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -21,12 +22,13 @@ public class PoolStick extends Sprite {
     private float outCharge = 0f;
     private boolean chargeAvailable = true;
     private boolean visible = true;
-    private boolean altControl = false;
+    private boolean altControl = true;
     
     
 
-    public PoolStick(String fileName, Vector2 origin) {
-        super(new Texture(fileName));
+    public PoolStick(Texture texture, Vector2 origin) {
+        super(texture);
+        texture.setFilter(TextureFilter.Linear, TextureFilter.Linear); // Rendering trick that smooths sharp pixelated edges
         this.origin = origin; 
         HEIGHT = super.getHeight();
         WIDTH = super.getWidth();
@@ -34,30 +36,27 @@ public class PoolStick extends Sprite {
         
     }
 
-    public PoolStick(String fileName, float x, float y) {
-        this(fileName, new Vector2(x, y));
+    public PoolStick(Texture texture, float x, float y) {
+        this(texture, new Vector2(x, y));
     }
 
     @Override
     public void draw(Batch batch) {
         /*---- Makes Pool Stick only visible when cue ball is not moving ----*/
-        if (!cueBall.isMoving() && !visible) {
-            setVisible(true);
-            move(cueBall.getCenter());
-            //drawCharged(0, batch);
-        }
         if (!visible) {
+            if (!cueBall.isMoving()) {
+                setVisible(true);
+                move(cueBall.getCenter());
+                //drawCharged(0, batch);
+            }
             return;
         }
+        
+        // Used to check input
         boolean left = in.isButtonPressed(Buttons.LEFT);
         boolean right = in.isButtonPressed(Buttons.RIGHT);
 
-        super.draw(batch);
         /*---- Checks if user wants to charge pool stick ----*/
-        // if (!altControl && right && chargeAvailable) {
-        //     drawCharged(chargeDist + 2f, batch);
-        // }
-        // else // time-based charge mode, not as good
         if ((altControl && left || !altControl && right) && chargeAvailable) {
             if (startPoint == null) { 
                 startPoint = new Vector2(in.getX(), in.getY()); // creates a new startpoint if one doesnt already exist
@@ -84,7 +83,7 @@ public class PoolStick extends Sprite {
                 super.draw(batch);
             }
         } 
-        /*---- Upon Stick Release ---*/
+        /*---- Resets stick upon stick release ---*/
         else {
             startPoint = null;
             drawCharged(chargeDist-7, batch);
@@ -96,6 +95,7 @@ public class PoolStick extends Sprite {
             chargeAvailable = false;
             if (chargeDist == 0) {
                 chargeAvailable = true;
+                setVisible(!cueBall.isMoving());
             }
         }
     }

@@ -28,9 +28,16 @@ public class Billiards extends Game {
     private World world; // pool table width is ~20 times ball diameter, ball radius ~9-10 pixels, set ball radius to ~.25 meters in box2D & table width to ~10m 
     private LaunchMenu launchMenu; // 1 px = .25 m
     private SettingsMenu settingsMenu;
-    private Circle[] holes = new Circle[6];
     private long lastTime;
     private static ShapeRenderer drawShape;
+    private Circle[] holes = { // cant be initialized like this in constructor
+        new Circle(150, 404, 17),
+        new Circle(749, 404, 17),
+        new Circle(150, 96, 17),
+        new Circle(749, 96, 17),
+        new Circle(450, 410, 15),
+        new Circle(450, 90, 15)
+    };
     
 
     @Override
@@ -45,7 +52,7 @@ public class Billiards extends Game {
         // Textures
         batch = new SpriteBatch();
         table = new Texture("stolenTableCropped.png");
-        stick = new PoolStick("pool stick.png", 450f , 300f);
+        stick = new PoolStick(new Texture("pool stick.png"), 450f , 300f);
 
         // Create Box2D world
         world = new World(new Vector2(0, 0), true);
@@ -116,22 +123,26 @@ public class Billiards extends Game {
         drawShape.begin(ShapeType.Line);
         drawShape.setColor(new Color(1f,0,0,0.01f));
         if (Gdx.input.isButtonPressed(Buttons.RIGHT)) { // creating debug lines for holes and walls of pool table
-            // drawShape.circle(450, 410, 15);
-            // drawShape.circle(150, 404, 17);
-            // drawShape.circle(749, 404, 17);
-            // drawShape.circle(450, 90, 15);
-            // drawShape.circle(150, 96, 17);
-            // drawShape.circle(749, 96, 17);
-            drawShape.line(183, 396, 430, 396);
-            drawShape.line(468, 396, 715, 396);
-            drawShape.line(183, 104, 430, 104);
-            drawShape.line(468, 104, 715, 104);
-            drawShape.line(158, 128, 158, 372);
-            drawShape.line(741, 128, 741, 372);
+            // Draw Hole Debug Circle
+            // drawShape.circle(150, 404, 17); // top left
+            // drawShape.circle(749, 404, 17); // top right
+            // drawShape.circle(150, 96, 17); // bottom left
+            // drawShape.circle(749, 96, 17); // bottom right
+            // drawShape.circle(450, 410, 15); // top middle
+            // drawShape.circle(450, 90, 15); // bottom middle
+
+            // Draw Table Debug Borders
+            drawShape.line(183, 396, 430, 396); // top left
+            drawShape.line(468, 396, 715, 396); // top right
+            drawShape.line(183, 104, 430, 104); // bottom left
+            drawShape.line(468, 104, 715, 104); // bottom right
+            drawShape.line(158, 128, 158, 372); // mid left
+            drawShape.line(741, 128, 741, 372); // mid right
             
             
-            drawShape.line(750, 422, 771, 450);
-            drawShape.line(741, 372, 771, 402);
+            drawShape.line(715, 396, 748, 429);
+            drawShape.line(741, 372, 773, 404);
+            drawShape.line(748, 429,773, 404);
         }
         drawShape.end();
     }
