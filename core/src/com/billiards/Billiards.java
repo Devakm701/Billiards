@@ -1,5 +1,7 @@
 package com.billiards;
 
+import java.util.LinkedList;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
@@ -12,9 +14,11 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Billiards extends Game {
     private SpriteBatch batch;
@@ -23,14 +27,14 @@ public class Billiards extends Game {
     private Texture table, background;
     public final static float PHYSICS_DT = 16; // constant that can be reduced to increase the rate of the physics sim
     private PoolStick stick;
-    // private LinkedList<Ball> balls; // after ball is complete
+    private LinkedList<Ball> balls; // after ball is complete
     private Ball cueBall;
     private World world; // pool table width is ~20 times ball diameter, ball radius ~9-10 pixels, set ball radius to ~.25 meters in box2D & table width to ~10m 
     private LaunchMenu launchMenu; // 1 px = .25 m
     private SettingsMenu settingsMenu;
     private long lastTime;
     private static ShapeRenderer drawShape;
-    private Circle[] holes = { // cant be initialized like this in constructor
+    private Circle[] holes = {
         new Circle(150, 404, 17),
         new Circle(749, 404, 17),
         new Circle(150, 96, 17),
@@ -56,43 +60,60 @@ public class Billiards extends Game {
 
         // Create Box2D world
         world = new World(new Vector2(0, 0), true);
-
-        // Create ground for friction
-        // FrictionJoint friction = new FrictionJoint(world, 0);
-        // BodyDef sDef = new BodyDef();
-        // sDef.type = BodyDef.BodyType.StaticBody;
-        // sDef.position.set(0f, 0f);
-        // Body tableSurface = world.createBody(sDef);
-        // FixtureDef sFixture = new FixtureDef();
-        // PolygonShape gameShape = new PolygonShape();
-        // gameShape.setAsBox(-WIDTH * 0.25f, 0);
-        // sFixture.shape = gameShape;
-        // sFixture.density = 1f;
-        // sFixture.friction = 1f;
-        // tableSurface.createFixture(sFixture);
-        // FrictionJointDef jointDef = new FrictionJointDef();
-        // jointDef.maxForce = 1f;
-        // jointDef.maxTorque = 1f; // idk why tf this doesnt work
         
         // Shape Shenanigans
         drawShape = new ShapeRenderer();
 
         // Ball Creation
-        // balls = new LinkedList<>();
+        balls = new LinkedList<>();
         BodyDef ballDef = new BodyDef();
         FixtureDef fixDef = new FixtureDef();
         ballDef.type = BodyDef.BodyType.DynamicBody;
+        ballDef.bullet = true;
         CircleShape ballCircle = new CircleShape();
+        System.out.println(Ball.RADIUS_M);
         ballCircle.setRadius(Ball.RADIUS_M);
         fixDef.shape = ballCircle;
-        fixDef.restitution = Ball.RESTITUTION; // restitution is how much of the speed remains after a collision
-        fixDef.density = 1f;
-        fixDef.friction = 1f;
+        System.out.println(fixDef.restitution);
+        fixDef.restitution = 1f; // restitution is how much of the speed remains after a collision
+        //fixDef.friction = 0.1f;
+        fixDef.friction = 0f;
+        fixDef.density = 60f;
         Body ball = world.createBody(ballDef);
         ball.createFixture(fixDef);
-        cueBall = new Ball(450, 300, "sphere-17_20x20.png", ball);
+        cueBall = new Ball(300, 250, "sphere-17_20x20.png", ball);
         stick.setCueBall(cueBall);
+        
+        int h = 1;
+        int downShift = 0;
+        for (int i = 0; i <= h && h <= 5; i++) {
+            for (int j = 0; j <= i; j++) {
+                Body tmpBall = world.createBody(ballDef);
+                tmpBall.createFixture(fixDef);
+                balls.add(new Ball(600 + i * 18, 250 + j * 20 - downShift, "sphere-17_20x20.png", tmpBall));
+            }
+            downShift += 10;
+            h++;
+        }
 
+        // Initialize outline
+        ChainShape border = new ChainShape();
+        Vector2[] windowOutline = {
+            new Vector2(0, 0),
+            new Vector2(WIDTH * Ball.SCALE_INV, 0),
+            new Vector2(WIDTH* Ball.SCALE_INV, HEIGHT* Ball.SCALE_INV),
+            new Vector2(0, HEIGHT* Ball.SCALE_INV)
+        };
+        border.createLoop(windowOutline);
+        BodyDef bd = new BodyDef();
+        bd.type = BodyType.StaticBody;
+        FixtureDef fd = new FixtureDef();
+        fd.shape = border;
+        fd.restitution = 1f;
+        fd.density = 1f;
+        fd.friction = 0f;
+        Body outlineBody = world.createBody(bd);
+        outlineBody.createFixture(fd);
 
         // Clear everything
         ballCircle.dispose();
@@ -111,12 +132,17 @@ public class Billiards extends Game {
         
         batch.begin();
         long currentTime = System.currentTimeMillis();
-        world.step(currentTime - lastTime, 2, 2);
-        cueBall.update();
+        world.step(1/144f, 40, 40);
         lastTime = currentTime;
-        //world.step(Gdx.graphics.getDeltaTime(), 6, 2);
         batch.draw(background, 0, 0);
         batch.draw(table, 450 - table.getWidth() / 2, 0);
+        cueBall.update();
+        for (Ball ball : balls) {
+            ball.update();
+            ball.getSprite().draw(batch);
+        }
+        //world.step(Gdx.graphics.getDeltaTime(), 6, 2);
+
         cueBall.getSprite().draw(batch);
         stick.draw(batch);
         batch.end();
@@ -139,10 +165,21 @@ public class Billiards extends Game {
             drawShape.line(158, 128, 158, 372); // mid left
             drawShape.line(741, 128, 741, 372); // mid right
             
-            
+
             drawShape.line(715, 396, 748, 429);
             drawShape.line(741, 372, 773, 404);
             drawShape.line(748, 429,773, 404);
+
+            // draw starting ball positions
+            int h = 1;
+            int downShift = 0;
+            for (int i = 0; i <= h && h <= 5; i++) {
+                for (int j = 0; j <= i; j++) {
+                    drawShape.circle(600 + i * 20, 250 + j * 20 - downShift, 10);
+                }
+                downShift += 10;
+                h++;
+            }
         }
         drawShape.end();
     }

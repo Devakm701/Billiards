@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class SettingsMenu implements Screen {
@@ -67,19 +68,26 @@ public class SettingsMenu implements Screen {
         hiGraphicsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                billiardsGame.closeMenu();
+                billiardsGame.openLaunchMenu();
             }
         });
+        stage.addActor(hiGraphicsButton);
+        hiGraphicsButton.setBounds(Billiards.WIDTH / 2 - 50, Billiards.HEIGHT / 2 +10, 100, 50);
 
         // Low Graphics
         loGraphicsButton = new TextButton("Low", style);
         loGraphicsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                billiardsGame.closeMenu();
+                billiardsGame.openLaunchMenu();
             }
         });
+        loGraphicsButton.setBounds(Billiards.WIDTH / 2 - 50, Billiards.HEIGHT / 2 - 60, 100, 50);
+        stage.addActor(loGraphicsButton);
 
+        // Close button
+        TextButtonStyle exitStyle = new TextButtonStyle();
+        
     }
 
     @Override

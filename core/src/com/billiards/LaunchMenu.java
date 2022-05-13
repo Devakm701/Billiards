@@ -84,9 +84,7 @@ public class LaunchMenu implements Screen {
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("hello"); // change when settings UI is implemented
                 billiardsGame.openSettings();
-                
             }
         });
         
