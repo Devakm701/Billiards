@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -17,7 +18,11 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Billiards extends Game {
@@ -34,6 +39,10 @@ public class Billiards extends Game {
     private SettingsMenu settingsMenu;
     private long lastTime;
     private static ShapeRenderer drawShape;
+    private Sound cushionSound;
+    private Sound ballSound;
+    private Sound cueSound;
+    private float volume = 1f;
     private Circle[] holes = {
         new Circle(150, 404, 17),
         new Circle(749, 404, 17),
@@ -42,6 +51,7 @@ public class Billiards extends Game {
         new Circle(450, 410, 15),
         new Circle(450, 90, 15)
     };
+    
     
 
     @Override
@@ -56,10 +66,11 @@ public class Billiards extends Game {
         // Textures
         batch = new SpriteBatch();
         table = new Texture("stolenTableCropped.png");
-        stick = new PoolStick(new Texture("pool stick.png"), 450f , 300f);
+        stick = new PoolStick(new Texture("pool stick.png"), 450f , 300f, this);
 
         // Create Box2D world
         world = new World(new Vector2(0, 0), true);
+        world.setContactListener(new CollisionListener());
         
         // Shape Shenanigans
         drawShape = new ShapeRenderer();
@@ -71,10 +82,8 @@ public class Billiards extends Game {
         ballDef.type = BodyDef.BodyType.DynamicBody;
         ballDef.bullet = true;
         CircleShape ballCircle = new CircleShape();
-        System.out.println(Ball.RADIUS_M);
         ballCircle.setRadius(Ball.RADIUS_M);
         fixDef.shape = ballCircle;
-        System.out.println(fixDef.restitution);
         fixDef.restitution = 0.75f; // restitution is how much of the speed remains after a collision
         //fixDef.friction = 0.1f;
         fixDef.friction = 0.1f;
@@ -114,6 +123,12 @@ public class Billiards extends Game {
         fd.friction = 0f;
         Body outlineBody = world.createBody(bd);
         outlineBody.createFixture(fd);
+
+
+        // Sounds
+        cushionSound = Gdx.audio.newSound(Gdx.files.internal("cushionHit.wav"));
+        ballSound = Gdx.audio.newSound(Gdx.files.internal("ballHit2.wav"));
+        cueSound = Gdx.audio.newSound(Gdx.files.internal("cueHit.wav"));
 
         // Clear everything
         ballCircle.dispose();
@@ -195,6 +210,11 @@ public class Billiards extends Game {
         }
         drawShape.end();
     }
+
+    public float setVolume(float vol) {
+        volume = vol;
+        return vol;
+    }
     
     @Override
     public void dispose () {
@@ -221,5 +241,39 @@ public class Billiards extends Game {
     public void closeMenu() {
         this.setScreen(null);
         Gdx.input.setInputProcessor(null);
+    }
+
+    public void playCueSound() {
+        cueSound.play(volume);
+    }
+    private class CollisionListener implements ContactListener {
+
+        @Override
+        public void beginContact(Contact contact) {
+            if ((contact.getFixtureA().getShape() instanceof ChainShape) || (contact.getFixtureB().getShape() instanceof ChainShape)) {
+                cushionSound.play(volume);
+            } else {
+                ballSound.play(volume);
+            }
+        }
+
+        @Override
+        public void endContact(Contact contact) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public void preSolve(Contact contact, Manifold oldManifold) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public void postSolve(Contact contact, ContactImpulse impulse) {
+            // TODO Auto-generated method stub
+            
+        }
+
     }
 }

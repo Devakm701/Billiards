@@ -107,18 +107,18 @@ public class SettingsMenu implements Screen {
         exitButton.setBounds(10, Billiards.HEIGHT - 30, 20, 20);
         stage.addActor(exitButton);
 
-        // SliderStyle volumeStyle = new SliderStyle();
-        // volumeStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture("VolumeBar.png")));
-        // volume = new Slider(0, 1.0f, 0.01f, false, volumeStyle);
-        // volume.addListener(new ChangeListener() {
-        //     @Override
-        //     public void changed(ChangeEvent event, Actor actor) {
-        //         float vol = volume.getVisualValue();
-        //     }
-        // });
-        // volume.setOrigin(200, 200);
-        // volume.setScale(0.5f);
-        // stage.addActor(volume);
+        SliderStyle volumeStyle = new SliderStyle();
+        volumeStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture("VolumeBar.png")));
+        volume = new Slider(0, 1.0f, 0.01f, false, new Skin(Gdx.files.internal("assets/ui-skins/holo/skin/dark-hdpi/Holo-dark-hdpi.json")));//volumeStyle);
+        volume.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                billiardsGame.setVolume(volume.getVisualValue());
+            }
+        });
+        volume.setPosition(200, 200);
+        volume.setWidth(400);
+        stage.addActor(volume);
 
     }
 

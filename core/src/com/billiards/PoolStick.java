@@ -23,21 +23,21 @@ public class PoolStick extends Sprite {
     private boolean chargeAvailable = true;
     private boolean visible = true;
     private boolean altControl = true;
-    
+    private Billiards billiards;
     
 
-    public PoolStick(Texture texture, Vector2 origin) {
+    public PoolStick(Texture texture, Vector2 origin, Billiards game) {
         super(texture);
         texture.setFilter(TextureFilter.Linear, TextureFilter.Linear); // Rendering trick that smooths sharp pixelated edges
         this.origin = origin; 
         HEIGHT = super.getHeight();
         WIDTH = super.getWidth();
         super.translate(origin.x - WIDTH - Ball.RADIUS_PX, origin.y - HEIGHT / 2);   
-        
+        billiards = game;
     }
 
-    public PoolStick(Texture texture, float x, float y) {
-        this(texture, new Vector2(x, y));
+    public PoolStick(Texture texture, float x, float y, Billiards game) {
+        this(texture, new Vector2(x, y), game);
     }
 
     @Override
@@ -129,6 +129,7 @@ public class PoolStick extends Sprite {
         v = v*v;//(float)Math.pow(v, 3); // remaps v between 0 and 1 from linear to exponential curve, gives more natural feeling shots, lower b is closer to linear
         v *= 10000 * Ball.SCALE_INV;
         double rad = Math.toRadians(getRotation());
+        billiards.playCueSound();
         cueBall.setVelocity((float)( v * Math.cos(rad) ),(float)( v * Math.sin(rad) ) );
     }
 
