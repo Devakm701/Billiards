@@ -16,9 +16,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class SettingsMenu implements Screen {
     private Preferences settings = Gdx.app.getPreferences("8 Ball Pool");
@@ -74,7 +74,7 @@ public class SettingsMenu implements Screen {
             }
         });
         stage.addActor(hiGraphicsButton);
-        hiGraphicsButton.setBounds(Billiards.WIDTH / 2 - 50, Billiards.HEIGHT / 2 +10, 100, 50);
+        hiGraphicsButton.setBounds(Billiards.WIDTH * 0.2f, Billiards.HEIGHT - 70, 150, 50);
 
         // Low Graphics
         loGraphicsButton = new TextButton("Low", style);
@@ -85,22 +85,22 @@ public class SettingsMenu implements Screen {
                 billiardsGame.openLaunchMenu();
             }
         });
-        loGraphicsButton.setBounds(Billiards.WIDTH / 2 - 50, Billiards.HEIGHT / 2 - 60, 100, 50);
+        loGraphicsButton.setBounds(Billiards.WIDTH * 0.4f, Billiards.HEIGHT - 70, 150, 50);
         stage.addActor(loGraphicsButton);
 
         // Close button
-        // TextButtonStyle exitStyle = new TextButtonStyle();
-        // exitStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("cancel.png")));
-
-        // exitButton = new Button();
-        // exitButton.addListener(new ChangeListener() {
-        //     @Override
-        //     public void changed(ChangeEvent event, Actor actor) {
-        //         billiardsGame.openLaunchMenu();
-        //     }
-        // });
-        // exitButton.setBounds(Billiards.WIDTH / 2 - 50, Billiards.HEIGHT / 2 - 130, 100, 50);
-        // stage.addActor(exitButton);
+        TextButtonStyle exitStyle = new TextButtonStyle();
+        exitStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("cancel.png")));
+        exitStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("cancel.png")));
+        exitButton = new Button(exitStyle);
+        exitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                billiardsGame.openLaunchMenu();
+            }
+        });
+        exitButton.setBounds(Billiards.WIDTH / 2 - 50, Billiards.HEIGHT / 2 - 130, 20, 20);
+        stage.addActor(exitButton);
 
 
     }

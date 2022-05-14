@@ -75,10 +75,10 @@ public class Billiards extends Game {
         ballCircle.setRadius(Ball.RADIUS_M);
         fixDef.shape = ballCircle;
         System.out.println(fixDef.restitution);
-        fixDef.restitution = 1f; // restitution is how much of the speed remains after a collision
+        fixDef.restitution = 0.75f; // restitution is how much of the speed remains after a collision
         //fixDef.friction = 0.1f;
-        fixDef.friction = 0f;
-        fixDef.density = 60f;
+        fixDef.friction = 0.1f;
+        fixDef.density = 1f;
         Body ball = world.createBody(ballDef);
         ball.createFixture(fixDef);
         cueBall = new Ball(300, 250, "sphere-17_20x20.png", ball);
@@ -178,11 +178,10 @@ public class Billiards extends Game {
             drawShape.line(463, 410, 463, 426); // vertical line on the right side
 
             // top left corner (same order as the previous ones)
-            drawShape.line(430, 396, 435, 410); 
-            drawShape.line(435, 410, 435, 426);
-            drawShape.line(435, 426, 463, 426);
-            drawShape.line(468, 396, 463, 410);
-            drawShape.line(463, 410, 463, 426);
+            drawShape.line(183, 396, 150, 429); 
+            drawShape.line(158, 372, 126, 404);
+            drawShape.line(126, 404, 150, 429);
+            
             // draw starting ball positions
             int h = 1;
             int downShift = 0;

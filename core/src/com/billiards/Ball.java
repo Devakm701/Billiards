@@ -12,6 +12,7 @@ public class Ball {
     public static final float SCALE_INV = 1/SCALE;
     public static final float RADIUS_M = RADIUS_PX * SCALE_INV;
     private static final float FRICTION = 0.99f;
+    private static final float LIMIT = 0.25f;
     private Sprite ballSprite;
     private Vector2 center;
     private Circle ballCircle;
@@ -43,26 +44,33 @@ public class Ball {
     }
 
     public void update() {
-        float dst = ballBody.getLinearVelocity().dst(0, 0);
-        //System.out.println(dst);
-        if (dst * SCALE / 2 == 0) {//< 0.00047) { // scale was at 2
-            //ballBody.setLinearVelocity(0f, 0f);
-            isMoving = false;
-            return;
-        }
-        
+        // float dst = ballBody.getLinearVelocity().dst(0, 0);
+        // //System.out.println(dst);
+        // if (dst * SCALE / 2 == 0) {//< 0.00047) { // scale was at 2
+        //     //ballBody.setLinearVelocity(0f, 0f);
+        //     isMoving = false;
+        //     return;
+        // }
+        Vector2 vBall = ballBody.getLinearVelocity();
+        float vAngle = ballBody.getAngularVelocity();
         isMoving = true;
         float x = ballBody.getPosition().x * SCALE;
         float y = ballBody.getPosition().y * SCALE;
         ballSprite.setPosition(x - RADIUS_PX, y - RADIUS_PX);
+        ballSprite.setRotation((float)Math.toDegrees(ballBody.getAngle()));
         center.x = x;
         center.y = y;
-        Vector2 vBall = ballBody.getLinearVelocity();
+        
+        if (Math.abs(vBall.x) < LIMIT && Math.abs(vBall.y) < LIMIT && Math.abs(vAngle) < LIMIT) {
+            ballBody.setLinearVelocity(new Vector2(0, 0));
+            ballBody.setAngularVelocity(0);
+            isMoving = false;
+        } else {
+            ballBody.setLinearVelocity(vBall.scl(FRICTION));
+            ballBody.setAngularVelocity(vAngle * FRICTION);
+        }
         //ballBody.setLinearVelocity(vBall.scl(FRICTION));
-
-        // if (dst > 0) {
-        //     System.out.println(dst);
-        // }
+        //
 
         // Keep in Bounds
         // if (center.x - RADIUS_PX < 0 || center.x + RADIUS_PX > Billiards.WIDTH) {
