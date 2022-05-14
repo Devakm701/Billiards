@@ -18,12 +18,18 @@ public class Ball {
     private Circle ballCircle;
     private Body ballBody;
     private boolean isMoving;
+    private boolean inPlay = true;
+    private Billiards billiardsGame;
+    private float timer = 0f;
+    private final int ballNum;
+    
 
-    public Ball(float initX, float initY, String fileName, Body body) { //, int ballNum) { //add after balls are properly implemented
+    public Ball(float initX, float initY, String fileName, Body body, int ballNum) { //add after balls are properly implemented
         ballSprite = new Sprite(new Texture(fileName));
         center = new Vector2(initX, initY);
         ballBody = body;
         move(initX, initY);
+        this.ballNum = ballNum;
     }
 
     public void move(float x, float y) {
@@ -80,11 +86,27 @@ public class Ball {
         // if (center.y - RADIUS_PX < 0 || center.y + RADIUS_PX > Billiards.HEIGHT) {
         //     ballBody.setLinearVelocity(vBall.x, vBall.y * -1);
         // }
+
+        for (Circle hole : Billiards.holes) {
+            if (hole.contains(center) && ballNum != 0) {
+                float dst = center.dst(hole.x, hole.y); 
+                if (dst > LIMIT * 0.001f) {
+                    move(hole.x, hole.y);
+                    this.setVelocity(0, 0);
+                }
+                else {
+                    ballBody.setLinearVelocity(new Vector2(hole.x, hole.y).sub(center).scl(0.0001f));
+                }
+                // if (billiardsGame.getCueBall().getCenter().equals(center)) {
+                //     billiardsGame.getCueBall()
+                // }
+            }
+        } 
     }
 
     public void setVelocity(float vX, float vY) {
         ballBody.setLinearVelocity(new Vector2(vX, vY));
-        System.out.println("x: " + vX + " y: " + vY);
+        //System.out.println("x: " + vX + " y: " + vY);
     }
 
     public boolean isMoving() {

@@ -76,6 +76,7 @@ public class LaunchMenu implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 billiardsGame.closeMenu();
+                billiardsGame.playButtonClick();
             }
         });
         
@@ -85,6 +86,7 @@ public class LaunchMenu implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 billiardsGame.openSettings();
+                billiardsGame.playButtonClick();
             }
         });
         
@@ -95,6 +97,7 @@ public class LaunchMenu implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.exit();
+                billiardsGame.playButtonClick();
             } 
         });
 

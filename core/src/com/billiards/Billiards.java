@@ -6,6 +6,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
@@ -48,9 +50,14 @@ public class Billiards extends Game {
     private Sound ballSound;
     private Sound cueSound;
     private Stage stage;
+    private Sound buttonClickSound;
     private float volume = 1f;
     private Screen lastScreen = launchMenu;
-    private Circle[] holes = {
+    private int FPS = 144;
+    private float frameDelta = 1f / FPS;
+    private Music akashProject; 
+
+    public static Circle[] holes = {
         new Circle(150, 404, 17),
         new Circle(749, 404, 17),
         new Circle(150, 96, 17),
@@ -58,6 +65,7 @@ public class Billiards extends Game {
         new Circle(450, 410, 15),
         new Circle(450, 90, 15)
     };
+
     
     
 
@@ -97,16 +105,18 @@ public class Billiards extends Game {
         fixDef.density = 1f;
         Body ball = world.createBody(ballDef);
         ball.createFixture(fixDef);
-        cueBall = new Ball(300, 250, "sphere-17_20x20.png", ball);
+        cueBall = new Ball(300, 250, "sphere-17_20x20.png", ball, 0);
         stick.setCueBall(cueBall);
         
+        int num = 1;
         int h = 1;
         int downShift = 0;
         for (int i = 0; i <= h && h <= 5; i++) {
             for (int j = 0; j <= i; j++) {
                 Body tmpBall = world.createBody(ballDef);
                 tmpBall.createFixture(fixDef);
-                balls.add(new Ball(600 + i * 18, 250 + j * 20 - downShift, "sphere-17_20x20.png", tmpBall));
+                balls.add(new Ball(600 + i * 18, 250 + j * 20 - downShift, "sphere-17_20x20.png", tmpBall, num));
+                num++;
             }
             downShift += 10;
             h++;
@@ -120,6 +130,37 @@ public class Billiards extends Game {
             new Vector2(WIDTH* Ball.SCALE_INV, HEIGHT* Ball.SCALE_INV),
             new Vector2(0, HEIGHT* Ball.SCALE_INV)
         };
+
+        // Vector2[] windowOutline = {
+        //     new Vector2(183, 396),
+        //     new Vector2(430, 396),
+        //     new Vector2(435, 410),
+        //     new Vector2(435, 426),
+        //     new Vector2(463, 426),
+        //     new Vector2(463, 410),
+        //     new Vector2(468, 396),
+        //     new Vector2(715, 396),
+        //     new Vector2(748, 429),
+        //     new Vector2(773, 404),
+        //     new Vector2(741, 372),
+        //     new Vector2(741, 128),
+        //     new Vector2(773, 97),
+        //     new Vector2(748, 70),
+        //     new Vector2(715, 104),
+        //     new Vector2(468, 104),
+        //     new Vector2(463, 90),
+        //     new Vector2(463,74),
+        //     new Vector2(435, 74),
+        //     new Vector2(435, 90),
+        //     new Vector2(430, 104),
+        //     new Vector2(183, 104),
+        //     new Vector2(150, 71),
+        //     new Vector2(126, 98),
+        //     new Vector2(158, 128),
+        //     new Vector2(158, 372),
+        //     new Vector2(126, 404),
+        //     new Vector2(150, 429),
+        // };
         border.createLoop(windowOutline);
         BodyDef bd = new BodyDef();
         bd.type = BodyType.StaticBody;
@@ -136,6 +177,8 @@ public class Billiards extends Game {
         cushionSound = Gdx.audio.newSound(Gdx.files.internal("cushionHit.wav"));
         ballSound = Gdx.audio.newSound(Gdx.files.internal("ballHit2.wav"));
         cueSound = Gdx.audio.newSound(Gdx.files.internal("cueHit.wav"));
+        akashProject = Gdx.audio.newMusic(Gdx.files.internal("Akash Music Genesis Project.wav"));
+        buttonClickSound = Gdx.audio.newSound(Gdx.files.internal("CrushMeDaddy.wav"));
 
         // Clear everything
         ballCircle.dispose();
@@ -179,6 +222,8 @@ public class Billiards extends Game {
             // drawShape.circle(450, 410, 15); // top middle
             // drawShape.circle(450, 90, 15); // bottom middle
 
+
+
             // Draw Table Debug Borders
             drawShape.line(183, 396, 430, 396); // top left
             drawShape.line(468, 396, 715, 396); // top right
@@ -204,6 +249,27 @@ public class Billiards extends Game {
             drawShape.line(158, 372, 126, 404);
             drawShape.line(126, 404, 150, 429);
             
+            // bottom left corner
+            drawShape.line(183, 104, 150, 71); 
+            drawShape.line(158, 128, 126, 98); 
+            drawShape.line(126, 98, 150, 71);
+
+            // bottom right corner
+            drawShape.line(715, 104, 748, 70); // left verti
+            drawShape.line(741, 128, 773, 97);
+            drawShape.line(748, 70, 773, 97);
+
+            // bottom middle 
+            drawShape.line(430, 104, 435, 90); // to wooden part on the left side
+            drawShape.line(435, 90, 435, 74); // vertical line on the left side
+            drawShape.line(435, 74, 463, 74); // bottom vertical line
+            drawShape.line(468, 104, 463, 90); // to wooden part on the right side
+            drawShape.line(463, 90, 463, 74); // vertical line on the right side
+
+
+
+
+
             // draw starting ball positions
             int h = 1;
             int downShift = 0;
@@ -257,6 +323,16 @@ public class Billiards extends Game {
         lastScreen = tmp;
     }
 
+    public void setFPS(int fps) {
+        FPS = fps;
+        Gdx.graphics.setForegroundFPS(fps);
+        frameDelta = 1f / FPS;
+    }
+
+    public int getFPS() {
+        return FPS;
+    }
+
     public void closeMenu() {
         lastScreen = this.getScreen();
         this.setScreen(null);
@@ -265,7 +341,33 @@ public class Billiards extends Game {
 
     public void playCueSound() {
         cueSound.play(volume);
+    } // is there sound
+
+    public void playAkashSound() {
+        akashProject.setLooping(true);
+        akashProject.play();
     }
+
+    public void stopAkashSound() {
+        akashProject.stop();
+    }
+
+    public Music getAkash() {
+        return akashProject;
+    }
+
+    public void playButtonClick() {
+        buttonClickSound.play(volume);
+    }
+
+    public Ball getCueBall() {
+        return cueBall;
+    }
+
+    public LinkedList<Ball> getBallList() {
+        return balls;
+    }
+
     private class CollisionListener implements ContactListener {
 
         @Override
@@ -278,22 +380,17 @@ public class Billiards extends Game {
         }
 
         @Override
-        public void endContact(Contact contact) {
-            // TODO Auto-generated method stub
-            
-        }
+        public void endContact(Contact contact) {}
 
         @Override
-        public void preSolve(Contact contact, Manifold oldManifold) {
-            // TODO Auto-generated method stub
-            
-        }
+        public void preSolve(Contact contact, Manifold oldManifold) {}
 
         @Override
-        public void postSolve(Contact contact, ContactImpulse impulse) {
-            // TODO Auto-generated method stub
-            
-        }
+        public void postSolve(Contact contact, ContactImpulse impulse) {}
 
+    }
+
+    public void destroyBody(Body body) {
+        world.destroyBody(body);
     }
 }

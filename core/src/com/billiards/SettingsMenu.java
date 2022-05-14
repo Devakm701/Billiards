@@ -1,6 +1,7 @@
 package com.billiards;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -41,6 +42,9 @@ public class SettingsMenu implements Screen {
     private Button exitButton;
     private Slider fxVolume;
     private SelectBox<String> antiAliasing;
+    private TextField fpsField;
+    private TextButton soundOffButton;
+    private TextButton soundOnButton;
 
     public SettingsMenu(Billiards game, Texture bg) { 
         billiardsGame = game;
@@ -74,8 +78,9 @@ public class SettingsMenu implements Screen {
         // Text Field Styler
         TextFieldStyle textStyle = new TextFieldStyle();
         textStyle.background = Billiards.getDrawable("blue.png");
-        labelStyle.font = font;
-        textStyle.focusedBackground = Billiards.getDrawable("bluePressed.png");
+        textStyle.font = font;
+        textStyle.fontColor = Color.WHITE;
+        textStyle.focusedBackground = Billiards.getDrawable("bluePress.png");
 
         // Button Styler
         TextButtonStyle style = new TextButtonStyle();
@@ -84,33 +89,36 @@ public class SettingsMenu implements Screen {
         style.checked = new TextureRegionDrawable(new TextureRegion(new Texture("bluePress.png"))); // down is pressed
         style.over = new TextureRegionDrawable(new TextureRegion(new Texture("blueHover.png"))); 
         
-        // High Graphics
-        Label presetLabel = new Label("Graphics Preset", labelStyle);
+        // Graphics Preset
+        Label presetLabel = new Label("  Graphics Preset", labelStyle);
         hiGraphicsButton = new TextButton("High", style);
         hiGraphicsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 // loGraphicsButton.setChecked(false);
-                Gdx.graphics.setForegroundFPS(1000);
+                billiardsGame.playButtonClick();
+                billiardsGame.setFPS(1000);
                 billiardsGame.lastScreen();
             }
         });
         stage.addActor(hiGraphicsButton);
-        hiGraphicsButton.setBounds(Billiards.WIDTH * 0.2f, Billiards.HEIGHT - 70, 150, 50);
-
-        // Low Graphics
+        // hiGraphicsButton.setBounds(Billiards.WIDTH * 0.2f, Billiards.HEIGHT - 70, 150, 50);
         loGraphicsButton = new TextButton("Low", style);
         loGraphicsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 // hiGraphicsButton.setChecked(false);
-                Gdx.graphics.setForegroundFPS(30);
+                billiardsGame.playButtonClick();
+                billiardsGame.setFPS(30);
                 billiardsGame.openLaunchMenu();
             }
         });
-        loGraphicsButton.setBounds(Billiards.WIDTH * 0.4f, Billiards.HEIGHT - 70, 150, 50);
+        // loGraphicsButton.setBounds(Billiards.WIDTH * 0.4f, Billiards.HEIGHT - 70, 150, 50);
         stage.addActor(loGraphicsButton);
-
+        Table presetTable = new Table();
+        presetTable.add(hiGraphicsButton).size(199, 50); 
+        presetTable.add(loGraphicsButton).size(199, 50).pad(0, 2, 0, 0);
+        
         // Close button
         TextButtonStyle exitStyle = new TextButtonStyle();
         exitStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("arrowDarker.png")));
@@ -120,6 +128,7 @@ public class SettingsMenu implements Screen {
         exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                billiardsGame.playButtonClick();
                 billiardsGame.openLaunchMenu();
             }
         });
@@ -152,7 +161,8 @@ public class SettingsMenu implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Gdx.graphics.setBackBufferConfig(8,8,8,8,16,0,16); well fix this later
-                System.out.println(antiAliasing.getName());
+                System.out.println(antiAliasing.getSelection());
+                billiardsGame.playButtonClick();
             }       
         });
         stage.addActor(antiAliasing); // need to figure that out // will do that later
@@ -162,27 +172,62 @@ public class SettingsMenu implements Screen {
         Label controlLabel = new Label("Control Buttons", labelStyle);
 
         // Fps
-        Label setFps = new Label("Fps", labelStyle);
+        Label fpsLabel = new Label("Fps", labelStyle);
+        fpsField = new TextField("", textStyle);
+        fpsField.setText("144");
+        fpsField.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                billiardsGame.setFPS(Integer.valueOf(fpsField.getText()));
+            }
+        });
         
+        // Music Sound
+        Label musicLabel = new Label("  Surround Sound", labelStyle);
+        soundOffButton = new TextButton("Off", style);
+        soundOffButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                billiardsGame.stopAkashSound();
+                soundOffButton.setChecked(false);
+                billiardsGame.getAkash().setPan(1f, 1f); //yeah
+                billiardsGame.playButtonClick();
+            }
+        });
 
+        soundOnButton = new TextButton("On", style);
+        soundOnButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                billiardsGame.playAkashSound();
+                soundOnButton.setChecked(false);
+                billiardsGame.getAkash().setPan(1f, 0.1f); //yeah
+                billiardsGame.playButtonClick();
+            }
+        });
+        Table musicTable = new Table();
+        musicTable.add(soundOnButton).size(199, 50); 
+        musicTable.add(soundOffButton).size(199, 50).pad(0, 2, 0, 0);
 
+        // UI Clicking
+        // just make sound for every button noe true
         // Table  no what other settings can we add // Anti Aliasing, 
                  //can change between 2x, 8x, and 16x use drop down menu for this, I made alternate control 
                  // scheme on pool stick so we can modify that, maybe make a separate slider for background music
                  // LOL
+        
         Table table = new Table();
-        table.add(presetLabel).size(200, 50);
-        table.add(hiGraphicsButton).size(200, 50); // we should make them same row innit 
-        table.add(loGraphicsButton).size(200, 50); // do bounds? waitr no
+        table.add(presetLabel).size(400, 50);
+        table.add(presetTable);
         table.row(); // oh no
+        //table.add(fpsLabel).size(400, 50);
+        //table.row();
+        table.add(musicLabel).size(400, 50);
+        table.add(musicTable).size(400, 50).pad(2);
         table.setPosition(Billiards.WIDTH / 2 , Billiards.HEIGHT / 2); 
-// i am lost
-// wym
-// i have idk
-// lost on waht to do?
-// yeah 
-// lets make table first
-// then well make a bunch of buttons and dropdowns true
+        table.row();
+        table.add(fpsLabel).size(400, 50);
+        table.add(fpsField).size(400, 50);
         stage.addActor(table);
     }
 
