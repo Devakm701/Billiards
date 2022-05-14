@@ -12,13 +12,20 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox.SelectBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -32,7 +39,8 @@ public class SettingsMenu implements Screen {
     private TextButton hiGraphicsButton;
     private TextButton loGraphicsButton;
     private Button exitButton;
-    private Slider volume;
+    private Slider fxVolume;
+    private SelectBox<String> antiAliasing;
 
     public SettingsMenu(Billiards game, Texture bg) { 
         billiardsGame = game;
@@ -58,8 +66,16 @@ public class SettingsMenu implements Screen {
         font = fontGenerator.generateFont(fontParam);
         fontGenerator.dispose(); 
 
-        // Table 
-        Table table = new Table();
+        // Label Styler
+        LabelStyle labelStyle = new LabelStyle(); 
+        labelStyle.background = Billiards.getDrawable("blue.png");
+        labelStyle.font = font;
+
+        // Text Field Styler
+        TextFieldStyle textStyle = new TextFieldStyle();
+        textStyle.background = Billiards.getDrawable("blue.png");
+        labelStyle.font = font;
+        textStyle.focusedBackground = Billiards.getDrawable("bluePressed.png");
 
         // Button Styler
         TextButtonStyle style = new TextButtonStyle();
@@ -69,12 +85,14 @@ public class SettingsMenu implements Screen {
         style.over = new TextureRegionDrawable(new TextureRegion(new Texture("blueHover.png"))); 
         
         // High Graphics
+        Label presetLabel = new Label("Graphics Preset", labelStyle);
         hiGraphicsButton = new TextButton("High", style);
         hiGraphicsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                loGraphicsButton.setChecked(false);
-                Gdx.graphics.setForegroundFPS(144);
+                // loGraphicsButton.setChecked(false);
+                Gdx.graphics.setForegroundFPS(1000);
+                billiardsGame.lastScreen();
             }
         });
         stage.addActor(hiGraphicsButton);
@@ -85,8 +103,9 @@ public class SettingsMenu implements Screen {
         loGraphicsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                hiGraphicsButton.setChecked(false);
+                // hiGraphicsButton.setChecked(false);
                 Gdx.graphics.setForegroundFPS(30);
+                billiardsGame.openLaunchMenu();
             }
         });
         loGraphicsButton.setBounds(Billiards.WIDTH * 0.4f, Billiards.HEIGHT - 70, 150, 50);
@@ -107,19 +126,64 @@ public class SettingsMenu implements Screen {
         exitButton.setBounds(10, Billiards.HEIGHT - 30, 20, 20);
         stage.addActor(exitButton);
 
+        // Volume Slider
         SliderStyle volumeStyle = new SliderStyle();
         volumeStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture("VolumeBar.png")));
-        volume = new Slider(0, 1.0f, 0.01f, false, new Skin(Gdx.files.internal("assets/ui-skins/holo/skin/dark-hdpi/Holo-dark-hdpi.json")));//volumeStyle);
-        volume.addListener(new ChangeListener() {
+        fxVolume = new Slider(0, 1.0f, 0.01f, false, new Skin(Gdx.files.internal("assets/ui-skins/holo/skin/dark-hdpi/Holo-dark-hdpi.json")));//volumeStyle);
+        fxVolume.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                billiardsGame.setVolume(volume.getVisualValue());
+                billiardsGame.setVolume(fxVolume.getVisualValue());
             }
         });
-        volume.setPosition(200, 200);
-        volume.setWidth(400);
-        stage.addActor(volume);
+        fxVolume.setPosition(200, 200);
+        fxVolume.setWidth(400);
+        stage.addActor(fxVolume);
 
+        // Anti Aliasing Drop Down
+        // do stage.add or table.add
+        // SelectBoxStyle aAStyle = new SelectBoxStyle();
+        // aAStyle.font = font;
+        // aAStyle.background = Billiards.getDrawable("blue.png");
+        // aAStyle.background = Billiards.getDrawable("blue.png");
+        antiAliasing = new SelectBox<String>(new Skin(Gdx.files.internal("assets/ui-skins/holo/skin/dark-hdpi/Holo-dark-hdpi.json")));  
+        antiAliasing.setItems("2x", "8x", "16x"); 
+        antiAliasing.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                //Gdx.graphics.setBackBufferConfig(8,8,8,8,16,0,16); well fix this later
+                System.out.println(antiAliasing.getName());
+            }       
+        });
+        stage.addActor(antiAliasing); // need to figure that out // will do that later
+        antiAliasing.setPosition(200, 400);
+
+        // Controls
+        Label controlLabel = new Label("Control Buttons", labelStyle);
+
+        // Fps
+        Label setFps = new Label("Fps", labelStyle);
+        
+
+
+        // Table  no what other settings can we add // Anti Aliasing, 
+                 //can change between 2x, 8x, and 16x use drop down menu for this, I made alternate control 
+                 // scheme on pool stick so we can modify that, maybe make a separate slider for background music
+                 // LOL
+        Table table = new Table();
+        table.add(presetLabel).size(200, 50);
+        table.add(hiGraphicsButton).size(200, 50); // we should make them same row innit 
+        table.add(loGraphicsButton).size(200, 50); // do bounds? waitr no
+        table.row(); // oh no
+        table.setPosition(Billiards.WIDTH / 2 , Billiards.HEIGHT / 2); 
+// i am lost
+// wym
+// i have idk
+// lost on waht to do?
+// yeah 
+// lets make table first
+// then well make a bunch of buttons and dropdowns true
+        stage.addActor(table);
     }
 
     @Override

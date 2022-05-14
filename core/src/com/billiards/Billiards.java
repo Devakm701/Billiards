@@ -5,10 +5,12 @@ import java.util.LinkedList;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
@@ -24,6 +26,9 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class Billiards extends Game {
     private SpriteBatch batch;
@@ -42,7 +47,9 @@ public class Billiards extends Game {
     private Sound cushionSound;
     private Sound ballSound;
     private Sound cueSound;
+    private Stage stage;
     private float volume = 1f;
+    private Screen lastScreen = launchMenu;
     private Circle[] holes = {
         new Circle(150, 404, 17),
         new Circle(749, 404, 17),
@@ -84,7 +91,7 @@ public class Billiards extends Game {
         CircleShape ballCircle = new CircleShape();
         ballCircle.setRadius(Ball.RADIUS_M);
         fixDef.shape = ballCircle;
-        fixDef.restitution = 0.75f; // restitution is how much of the speed remains after a collision
+        fixDef.restitution = 0.95f; // restitution is how much of the speed remains after a collision
         //fixDef.friction = 0.1f;
         fixDef.friction = 0.1f;
         fixDef.density = 1f;
@@ -231,14 +238,27 @@ public class Billiards extends Game {
     }
 
     public void openSettings() {
+        lastScreen = this.getScreen();
         this.setScreen(settingsMenu);
     }
 
     public void openLaunchMenu() {
+        lastScreen = this.getScreen();
         this.setScreen(launchMenu);
     }
 
+    public static Drawable getDrawable(String fileName) {
+        return (Drawable)(new TextureRegionDrawable(new TextureRegion(new Texture(fileName))));
+    }
+
+    public void lastScreen() {
+        Screen tmp = this.getScreen();
+        this.setScreen(lastScreen);
+        lastScreen = tmp;
+    }
+
     public void closeMenu() {
+        lastScreen = this.getScreen();
         this.setScreen(null);
         Gdx.input.setInputProcessor(null);
     }

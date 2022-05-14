@@ -61,6 +61,7 @@ public class Ball {
         center.x = x;
         center.y = y;
         
+
         if (Math.abs(vBall.x) < LIMIT && Math.abs(vBall.y) < LIMIT && Math.abs(vAngle) < LIMIT) {
             ballBody.setLinearVelocity(new Vector2(0, 0));
             ballBody.setAngularVelocity(0);
