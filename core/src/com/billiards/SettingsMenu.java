@@ -61,16 +61,16 @@ public class SettingsMenu implements Screen {
         TextButtonStyle style = new TextButtonStyle();
         style.font = font;
         style.up = new TextureRegionDrawable(new TextureRegion(new Texture("blue.png"))); // up is when button released
-        style.down = new TextureRegionDrawable(new TextureRegion(new Texture("blueHover.png"))); // down is pressed
-        style.over = new TextureRegionDrawable(new TextureRegion(new Texture("bluePress.png"))); 
+        style.checked = new TextureRegionDrawable(new TextureRegion(new Texture("bluePress.png"))); // down is pressed
+        style.over = new TextureRegionDrawable(new TextureRegion(new Texture("blueHover.png"))); 
         
         // High Graphics
         hiGraphicsButton = new TextButton("High", style);
         hiGraphicsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                loGraphicsButton.setChecked(false);
                 Gdx.graphics.setForegroundFPS(144);
-                billiardsGame.openLaunchMenu();
             }
         });
         stage.addActor(hiGraphicsButton);
@@ -81,8 +81,8 @@ public class SettingsMenu implements Screen {
         loGraphicsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                hiGraphicsButton.setChecked(false);
                 Gdx.graphics.setForegroundFPS(30);
-                billiardsGame.openLaunchMenu();
             }
         });
         loGraphicsButton.setBounds(Billiards.WIDTH * 0.4f, Billiards.HEIGHT - 70, 150, 50);
@@ -90,8 +90,9 @@ public class SettingsMenu implements Screen {
 
         // Close button
         TextButtonStyle exitStyle = new TextButtonStyle();
-        exitStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("cancel.png")));
-        exitStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("cancel.png")));
+        exitStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("arrowDarker.png")));
+        exitStyle.over = new TextureRegionDrawable(new TextureRegion(new Texture("arrowDarkerer.png")));
+        exitStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("arrowDarkesterest.png")));
         exitButton = new Button(exitStyle);
         exitButton.addListener(new ChangeListener() {
             @Override
@@ -99,9 +100,8 @@ public class SettingsMenu implements Screen {
                 billiardsGame.openLaunchMenu();
             }
         });
-        exitButton.setBounds(Billiards.WIDTH / 2 - 50, Billiards.HEIGHT / 2 - 130, 20, 20);
+        exitButton.setBounds(10, Billiards.HEIGHT - 30, 20, 20);
         stage.addActor(exitButton);
-
 
     }
 
