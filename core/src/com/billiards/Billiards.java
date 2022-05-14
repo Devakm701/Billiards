@@ -168,7 +168,7 @@ public class Billiards extends Game {
             // top right corner
             drawShape.line(715, 396, 748, 429); 
             drawShape.line(741, 372, 773, 404);
-            drawShape.line(748, 429,773, 404);
+            drawShape.line(748, 429, 773, 404);
 
             // top middle corner
             drawShape.line(430, 396, 435, 410); // to wooden part on the left side
@@ -179,9 +179,27 @@ public class Billiards extends Game {
 
             // top left corner (same order as the previous ones)
             drawShape.line(183, 396, 150, 429); 
-            drawShape.line(158, 372, 126, 404);
+            drawShape.line(158, 372, 126, 404); // left verti
             drawShape.line(126, 404, 150, 429);
             
+            // bottom left corner
+            drawShape.line(183, 104, 150, 70); 
+            drawShape.line(158, 128, 126, 100); 
+            drawShape.line(126, 100, 150, 70);
+            
+            // bottom right corner
+            drawShape.line(715, 104, 748, 70); // left verti
+            drawShape.line(741, 128, 773, 97);
+            drawShape.line(748, 70, 773, 97);
+
+            // bottom middle 
+            drawShape.line(430, 104, 435, 90); // to wooden part on the left side
+            drawShape.line(435, 90, 435, 74); // vertical line on the left side
+            drawShape.line(435, 74, 463, 74); // bottom vertical line
+            drawShape.line(468, 104, 463, 90); // to wooden part on the right side
+            drawShape.line(463, 90, 463,74); // vertical line on the right side
+
+
             // draw starting ball positions
             int h = 1;
             int downShift = 0;
