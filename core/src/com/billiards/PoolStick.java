@@ -22,7 +22,6 @@ public class PoolStick extends Sprite {
     private float outCharge = 0f;
     private boolean chargeAvailable = true;
     private boolean visible = true;
-    private boolean altControl = true;
     private Billiards billiards;
     
 
@@ -55,6 +54,7 @@ public class PoolStick extends Sprite {
         // Used to check input
         boolean left = in.isButtonPressed(Buttons.LEFT);
         boolean right = in.isButtonPressed(Buttons.RIGHT);
+        boolean altControl = Billiards.altControl;
 
         /*---- Checks if user wants to charge pool stick ----*/
         if ((altControl && left || !altControl && right) && chargeAvailable) {
@@ -127,13 +127,10 @@ public class PoolStick extends Sprite {
 
     private void launchCueBall(float v) {
         v = v*v;//(float)Math.pow(v, 3); // remaps v between 0 and 1 from linear to exponential curve, gives more natural feeling shots, lower b is closer to linear
-        v *= 1000 * Ball.SCALE_INV;
+        v *= 600 * Ball.SCALE_INV;
         double rad = Math.toRadians(getRotation());
         billiards.playCueSound();
         cueBall.setVelocity((float)( v * Math.cos(rad) ),(float)( v * Math.sin(rad) ) );
     }
 
-    public void toggleAltControl() {
-        altControl = !altControl;
-    }
 }

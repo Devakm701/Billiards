@@ -18,7 +18,6 @@ public class Ball {
     private Circle ballCircle;
     private Body ballBody;
     private boolean isMoving;
-    private boolean inPlay = true;
     private Billiards billiardsGame;
     private float timer = 0f;
     private final int ballNum;
@@ -90,16 +89,13 @@ public class Ball {
         for (Circle hole : Billiards.holes) {
             if (hole.contains(center) && ballNum != 0) {
                 float dst = center.dst(hole.x, hole.y); 
-                if (dst > LIMIT * 0.001f) {
+                if (dst < LIMIT) {
                     move(hole.x, hole.y);
                     this.setVelocity(0, 0);
                 }
                 else {
-                    ballBody.setLinearVelocity(new Vector2(hole.x, hole.y).sub(center).scl(0.0001f));
+                    ballBody.setLinearVelocity(new Vector2(hole.x, hole.y).sub(center).scl(0.5f));
                 }
-                // if (billiardsGame.getCueBall().getCenter().equals(center)) {
-                //     billiardsGame.getCueBall()
-                // }
             }
         } 
     }

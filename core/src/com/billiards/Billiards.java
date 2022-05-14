@@ -33,16 +33,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class Billiards extends Game {
-    private SpriteBatch batch;
     public static final int WIDTH = 900;
     public static final int HEIGHT = 600;
+    private static final float PHYSICS_DT = 1/144f;
+    public static boolean altControl = false;
+    private SpriteBatch batch;
     private Texture table, background;
-    public final static float PHYSICS_DT = 16; // constant that can be reduced to increase the rate of the physics sim
     private PoolStick stick;
-    private LinkedList<Ball> balls; // after ball is complete
+    private LinkedList<Ball> balls; 
     private Ball cueBall;
-    private World world; // pool table width is ~20 times ball diameter, ball radius ~9-10 pixels, set ball radius to ~.25 meters in box2D & table width to ~10m 
-    private LaunchMenu launchMenu; // 1 px = .25 m
+    private World world; 
+    private LaunchMenu launchMenu;
     private SettingsMenu settingsMenu;
     private long lastTime;
     private static ShapeRenderer drawShape;
@@ -54,7 +55,6 @@ public class Billiards extends Game {
     private float volume = 1f;
     private Screen lastScreen = launchMenu;
     private int FPS = 144;
-    private float frameDelta = 1f / FPS;
     private Music akashProject; 
 
     public static Circle[] holes = {
@@ -131,7 +131,7 @@ public class Billiards extends Game {
         //     new Vector2(0, HEIGHT* Ball.SCALE_INV)
         // };
 
-        Vector2[] windowOutline = {
+        Vector2[] tableOutline = {
             new Vector2(183, 396),
             new Vector2(430, 396),
             new Vector2(435, 410),
@@ -161,10 +161,10 @@ public class Billiards extends Game {
             new Vector2(126, 404),
             new Vector2(150, 429),
         };
-        for (int i = 0; i < windowOutline.length; i++) {
-            windowOutline[i] = windowOutline[i].scl(Ball.SCALE_INV);
+        for (int i = 0; i < tableOutline.length; i++) {
+            tableOutline[i] = tableOutline[i].scl(Ball.SCALE_INV);
         }
-        border.createLoop(windowOutline);
+        border.createLoop(tableOutline);
         BodyDef bd = new BodyDef();
         bd.type = BodyType.StaticBody;
         FixtureDef fd = new FixtureDef();
@@ -183,16 +183,14 @@ public class Billiards extends Game {
         akashProject = Gdx.audio.newMusic(Gdx.files.internal("Akash Music Genesis Project.wav"));
         buttonClickSound = Gdx.audio.newSound(Gdx.files.internal("CrushMeDaddy.wav"));
 
-        // Clear everything
+        // Miscellaneous
         ballCircle.dispose();
-
-
         lastTime = System.currentTimeMillis();
+        setFPS(FPS);
     }
 
     @Override
     public void render () {
-        //ScreenUtils.clear(0, 0, 0.2f, 0); // i forgot what this does
         if (this.getScreen() != null) {
             super.render();
             return;
@@ -200,7 +198,8 @@ public class Billiards extends Game {
         
         batch.begin();
         long currentTime = System.currentTimeMillis();
-        world.step(1/144f, 40, 40);
+        world.step(PHYSICS_DT, 40, 40);
+        // world.step(Math.min(Gdx.graphics.getDeltaTime(), 0.15f), 6, 2);
         lastTime = currentTime;
         batch.draw(background, 0, 0);
         batch.draw(table, 450 - table.getWidth() / 2, 0);
@@ -209,8 +208,6 @@ public class Billiards extends Game {
             ball.update();
             ball.getSprite().draw(batch);
         }
-        //world.step(Gdx.graphics.getDeltaTime(), 6, 2);
-
         cueBall.getSprite().draw(batch);
         stick.draw(batch);
         batch.end();
@@ -329,7 +326,7 @@ public class Billiards extends Game {
     public void setFPS(int fps) {
         FPS = fps;
         Gdx.graphics.setForegroundFPS(fps);
-        frameDelta = 1f / FPS;
+        // physicsDelta = 1f / FPS;
     }
 
     public int getFPS() {
