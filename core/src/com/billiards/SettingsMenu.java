@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -27,7 +28,7 @@ public class SettingsMenu implements Screen {
     private BitmapFont font = new BitmapFont();
     private TextButton hiGraphicsButton;
     private TextButton loGraphicsButton;
-    
+    private Button exitButton;
 
     public SettingsMenu(Billiards game, Texture bg) { 
         billiardsGame = game;
@@ -68,6 +69,7 @@ public class SettingsMenu implements Screen {
         hiGraphicsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                Gdx.graphics.setForegroundFPS(144);
                 billiardsGame.openLaunchMenu();
             }
         });
@@ -79,6 +81,7 @@ public class SettingsMenu implements Screen {
         loGraphicsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                Gdx.graphics.setForegroundFPS(30);
                 billiardsGame.openLaunchMenu();
             }
         });
@@ -86,8 +89,20 @@ public class SettingsMenu implements Screen {
         stage.addActor(loGraphicsButton);
 
         // Close button
-        TextButtonStyle exitStyle = new TextButtonStyle();
-        
+        // TextButtonStyle exitStyle = new TextButtonStyle();
+        // exitStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("cancel.png")));
+
+        // exitButton = new Button();
+        // exitButton.addListener(new ChangeListener() {
+        //     @Override
+        //     public void changed(ChangeEvent event, Actor actor) {
+        //         billiardsGame.openLaunchMenu();
+        //     }
+        // });
+        // exitButton.setBounds(Billiards.WIDTH / 2 - 50, Billiards.HEIGHT / 2 - 130, 100, 50);
+        // stage.addActor(exitButton);
+
+
     }
 
     @Override

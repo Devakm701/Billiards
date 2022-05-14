@@ -14,11 +14,11 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Billiards extends Game {
     private SpriteBatch batch;
@@ -165,17 +165,30 @@ public class Billiards extends Game {
             drawShape.line(158, 128, 158, 372); // mid left
             drawShape.line(741, 128, 741, 372); // mid right
             
-
-            drawShape.line(715, 396, 748, 429);
+            // top right corner
+            drawShape.line(715, 396, 748, 429); 
             drawShape.line(741, 372, 773, 404);
             drawShape.line(748, 429,773, 404);
 
+            // top middle corner
+            drawShape.line(430, 396, 435, 410); // to wooden part on the left side
+            drawShape.line(435, 410, 435, 426); // vertical line on the left side
+            drawShape.line(435, 426, 463, 426); // top vertical line
+            drawShape.line(468, 396, 463, 410); // to wooden part on the right side
+            drawShape.line(463, 410, 463, 426); // vertical line on the right side
+
+            // top left corner (same order as the previous ones)
+            drawShape.line(430, 396, 435, 410); 
+            drawShape.line(435, 410, 435, 426);
+            drawShape.line(435, 426, 463, 426);
+            drawShape.line(468, 396, 463, 410);
+            drawShape.line(463, 410, 463, 426);
             // draw starting ball positions
             int h = 1;
             int downShift = 0;
             for (int i = 0; i <= h && h <= 5; i++) {
                 for (int j = 0; j <= i; j++) {
-                    drawShape.circle(600 + i * 20, 250 + j * 20 - downShift, 10);
+                    drawShape.circle(600 + i * 18, 250 + j * 20 - downShift, 10);
                 }
                 downShift += 10;
                 h++;
