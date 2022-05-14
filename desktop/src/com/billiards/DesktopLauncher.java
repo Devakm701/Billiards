@@ -17,5 +17,4 @@ public class DesktopLauncher {
         config.setWindowIcon("8-ball.png");
         new Lwjgl3Application(new Billiards(), config);
     }
-    // https://prod.liveshare.vsengsaas.visualstudio.com/join?E593C319BB50C42E1C77072EE275FB7A0243
 }
