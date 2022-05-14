@@ -13,8 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
@@ -29,6 +32,7 @@ public class SettingsMenu implements Screen {
     private TextButton hiGraphicsButton;
     private TextButton loGraphicsButton;
     private Button exitButton;
+    private Slider volume;
 
     public SettingsMenu(Billiards game, Texture bg) { 
         billiardsGame = game;
@@ -102,6 +106,19 @@ public class SettingsMenu implements Screen {
         });
         exitButton.setBounds(10, Billiards.HEIGHT - 30, 20, 20);
         stage.addActor(exitButton);
+
+        // SliderStyle volumeStyle = new SliderStyle();
+        // volumeStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture("VolumeBar.png")));
+        // volume = new Slider(0, 1.0f, 0.01f, false, volumeStyle);
+        // volume.addListener(new ChangeListener() {
+        //     @Override
+        //     public void changed(ChangeEvent event, Actor actor) {
+        //         float vol = volume.getVisualValue();
+        //     }
+        // });
+        // volume.setOrigin(200, 200);
+        // volume.setScale(0.5f);
+        // stage.addActor(volume);
 
     }
 
