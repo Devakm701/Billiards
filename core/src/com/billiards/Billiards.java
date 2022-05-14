@@ -124,43 +124,46 @@ public class Billiards extends Game {
 
         // Initialize outline
         ChainShape border = new ChainShape();
-        Vector2[] windowOutline = {
-            new Vector2(0, 0),
-            new Vector2(WIDTH * Ball.SCALE_INV, 0),
-            new Vector2(WIDTH* Ball.SCALE_INV, HEIGHT* Ball.SCALE_INV),
-            new Vector2(0, HEIGHT* Ball.SCALE_INV)
-        };
-
         // Vector2[] windowOutline = {
-        //     new Vector2(183, 396),
-        //     new Vector2(430, 396),
-        //     new Vector2(435, 410),
-        //     new Vector2(435, 426),
-        //     new Vector2(463, 426),
-        //     new Vector2(463, 410),
-        //     new Vector2(468, 396),
-        //     new Vector2(715, 396),
-        //     new Vector2(748, 429),
-        //     new Vector2(773, 404),
-        //     new Vector2(741, 372),
-        //     new Vector2(741, 128),
-        //     new Vector2(773, 97),
-        //     new Vector2(748, 70),
-        //     new Vector2(715, 104),
-        //     new Vector2(468, 104),
-        //     new Vector2(463, 90),
-        //     new Vector2(463,74),
-        //     new Vector2(435, 74),
-        //     new Vector2(435, 90),
-        //     new Vector2(430, 104),
-        //     new Vector2(183, 104),
-        //     new Vector2(150, 71),
-        //     new Vector2(126, 98),
-        //     new Vector2(158, 128),
-        //     new Vector2(158, 372),
-        //     new Vector2(126, 404),
-        //     new Vector2(150, 429),
+        //     new Vector2(0, 0),
+        //     new Vector2(WIDTH * Ball.SCALE_INV, 0),
+        //     new Vector2(WIDTH* Ball.SCALE_INV, HEIGHT* Ball.SCALE_INV),
+        //     new Vector2(0, HEIGHT* Ball.SCALE_INV)
         // };
+
+        Vector2[] windowOutline = {
+            new Vector2(183, 396),
+            new Vector2(430, 396),
+            new Vector2(435, 410),
+            new Vector2(435, 426),
+            new Vector2(463, 426),
+            new Vector2(463, 410),
+            new Vector2(468, 396),
+            new Vector2(715, 396),
+            new Vector2(748, 429),
+            new Vector2(773, 404),
+            new Vector2(741, 372),
+            new Vector2(741, 128),
+            new Vector2(773, 97),
+            new Vector2(748, 70),
+            new Vector2(715, 104),
+            new Vector2(468, 104),
+            new Vector2(463, 90),
+            new Vector2(463,74),
+            new Vector2(435, 74),
+            new Vector2(435, 90),
+            new Vector2(430, 104),
+            new Vector2(183, 104),
+            new Vector2(150, 71),
+            new Vector2(126, 98),
+            new Vector2(158, 128),
+            new Vector2(158, 372),
+            new Vector2(126, 404),
+            new Vector2(150, 429),
+        };
+        for (int i = 0; i < windowOutline.length; i++) {
+            windowOutline[i] = windowOutline[i].scl(Ball.SCALE_INV);
+        }
         border.createLoop(windowOutline);
         BodyDef bd = new BodyDef();
         bd.type = BodyType.StaticBody;
