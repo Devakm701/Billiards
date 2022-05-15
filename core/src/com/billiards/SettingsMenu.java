@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox.SelectBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -47,6 +48,8 @@ public class SettingsMenu implements Screen {
     private boolean initialized = false;
     private TextButton mouseButton;
     private TextButton hoverButton;
+    private TextButton flipOn;
+    private TextButton flipOff;
 
     public SettingsMenu(Billiards game, Texture bg) { 
         billiardsGame = game;
@@ -72,6 +75,24 @@ public class SettingsMenu implements Screen {
         font = fontGenerator.generateFont(fontParam);
         fontGenerator.dispose(); 
 
+
+        // Close button
+        TextButtonStyle exitStyle = new TextButtonStyle();
+        exitStyle.up = Billiards.getDrawable("arrowDarker.png");
+        exitStyle.over = Billiards.getDrawable("arrowDarkerer.png");
+        exitStyle.down = Billiards.getDrawable("arrowDarkesterest.png");
+        exitButton = new Button(exitStyle);
+        exitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                billiardsGame.openLaunchMenu();
+                initialized = false;
+                buttonChange();
+            }
+        });
+        exitButton.setBounds(10, Billiards.HEIGHT - 30, 20, 20);
+        stage.addActor(exitButton);
+
         // Label Styler
         LabelStyle labelStyle = new LabelStyle(); 
         labelStyle.background = Billiards.getDrawable("blue.png");
@@ -91,6 +112,12 @@ public class SettingsMenu implements Screen {
         style.checked = new TextureRegionDrawable(new TextureRegion(new Texture("bluePress.png"))); // down is pressed
         style.over = new TextureRegionDrawable(new TextureRegion(new Texture("blueHover.png"))); 
         
+        SelectBoxStyle selectStyle = new SelectBoxStyle();
+        selectStyle.font = font;
+        selectStyle.background = Billiards.getDrawable("blue.png");
+        selectStyle.backgroundDisabled = Billiards.getDrawable("blueHover.png");
+        selectStyle.backgroundOpen = Billiards.getDrawable("bluePress.png");
+
         // Graphics Preset
         Label presetLabel = new Label("  Graphics Preset", labelStyle);
         hiGraphicsButton = new TextButton("High", style);
@@ -105,7 +132,6 @@ public class SettingsMenu implements Screen {
                 }
             }
         });
-        stage.addActor(hiGraphicsButton);
         
         loGraphicsButton = new TextButton("Low", style);
         loGraphicsButton.addListener(new ChangeListener() {
@@ -119,63 +145,39 @@ public class SettingsMenu implements Screen {
                 }
             }
         });
-        stage.addActor(loGraphicsButton);
-
-        Table presetTable = new Table();
-        presetTable.add(loGraphicsButton).size(199, 50); 
-        presetTable.add(hiGraphicsButton).size(199, 50).pad(0, 2, 0, 0);
+        Table presetTable = createTable2(loGraphicsButton, hiGraphicsButton);
 
         
 
-        // Close button
-        TextButtonStyle exitStyle = new TextButtonStyle();
-        exitStyle.up = Billiards.getDrawable("arrowDarker.png");
-        exitStyle.over = Billiards.getDrawable("arrowDarkerer.png");
-        exitStyle.down = Billiards.getDrawable("arrowDarkesterest.png");
-        exitButton = new Button(exitStyle);
-        exitButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                billiardsGame.openLaunchMenu();
-                initialized = false;
-                buttonChange();
-            }
-        });
-        exitButton.setBounds(10, Billiards.HEIGHT - 30, 20, 20);
-        stage.addActor(exitButton);
 
-        // Volume Slider
-        SliderStyle volumeStyle = new SliderStyle();
-        volumeStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture("VolumeBar.png")));
-        fxVolume = new Slider(0, 1.0f, 0.01f, false, new Skin(Gdx.files.internal("assets/ui-skins/holo/skin/dark-hdpi/Holo-dark-hdpi.json")));//volumeStyle);
-        fxVolume.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                billiardsGame.setVolume(fxVolume.getVisualValue());
-            }
-        });
-        fxVolume.setPosition(200, 200);
-        fxVolume.setWidth(400);
-        stage.addActor(fxVolume);
+        // // Volume Slider
+        // SliderStyle volumeStyle = new SliderStyle();
+        // volumeStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture("VolumeBar.png")));
+        // fxVolume = new Slider(0, 1.0f, 0.01f, false, new Skin(Gdx.files.internal("assets/ui-skins/holo/skin/dark-hdpi/Holo-dark-hdpi.json")));//volumeStyle);
+        // fxVolume.addListener(new ChangeListener() {
+        //     @Override
+        //     public void changed(ChangeEvent event, Actor actor) {
+        //         billiardsGame.setVolume(fxVolume.getVisualValue());
+        //     }
+        // });
+        // fxVolume.setPosition(200, 200);
+        // fxVolume.setWidth(400);
+        // stage.addActor(fxVolume);
 
-        // Anti Aliasing Drop Down
+        // Anisotropic Filtering Drop Down
         // do stage.add or table.add
-        // SelectBoxStyle aAStyle = new SelectBoxStyle();
-        // aAStyle.font = font;
-        // aAStyle.background = Billiards.getDrawable("blue.png");
-        // aAStyle.background = Billiards.getDrawable("blue.png");
-        antiAliasing = new SelectBox<String>(new Skin(Gdx.files.internal("assets/ui-skins/holo/skin/dark-hdpi/Holo-dark-hdpi.json")));  
-        antiAliasing.setItems("2x", "8x", "16x"); 
-        antiAliasing.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                //Gdx.graphics.setBackBufferConfig(8,8,8,8,16,0,16); well fix this later
-                System.out.println(antiAliasing.getSelection());
-                buttonChange();
-            }       
-        });
-        stage.addActor(antiAliasing); // need to figure that out // will do that later
-        antiAliasing.setPosition(200, 400);
+        // antiAliasing = new SelectBox<String>(new Skin(Gdx.files.internal("assets/ui-skins/holo/skin/dark-hdpi/Holo-dark-hdpi.json")));  
+        // antiAliasing.setItems("2x", "8x", "16x"); 
+        // antiAliasing.addListener(new ChangeListener() {
+        //     @Override
+        //     public void changed(ChangeEvent event, Actor actor) {
+        //         //Gdx.graphics.setBackBufferConfig(8,8,8,8,16,0,16); well fix this later
+        //         System.out.println(antiAliasing.getSelection());
+        //         buttonChange();
+        //     }       
+        // });
+        // stage.addActor(antiAliasing); // need to figure that out // will do that later
+        // antiAliasing.setPosition(200, 400);
 
         // Controls
         Label controlLabel = new Label("  Cue Control Style", labelStyle);
@@ -202,6 +204,38 @@ public class SettingsMenu implements Screen {
                 }
             }
         });
+        Table controlTable = createTable2(mouseButton, hoverButton);
+
+        // Flip Pool Stick Direction 
+        Label flipLabel = new Label("  Flip Cue Direction", labelStyle);
+        flipOn = new TextButton("On", style);
+        flipOn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (flipOn.isChecked() && initialized) {
+                    flipOff.setChecked(false);
+                    Billiards.stickFlip = true;
+                    buttonChange();
+                } else if (!flipOff.isChecked() && initialized) {
+                    flipOn.setChecked(true);
+                }
+            }
+        });
+
+        flipOff = new TextButton("Off", style);
+        flipOff.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (flipOff.isChecked() && initialized) {
+                    flipOn.setChecked(false);
+                    Billiards.stickFlip = true;
+                    buttonChange();
+                } else if (!flipOn.isChecked() && initialized) {
+                    flipOff.setChecked(true);
+                }
+            }
+        });
+        Table flipTable = createTable2(flipOff, flipOn);
 
         // Fps
         Label fpsLabel = new Label("  Frame Rate", labelStyle);
@@ -259,14 +293,12 @@ public class SettingsMenu implements Screen {
                 if (soundOnButton.isChecked() && initialized) {
                     billiardsGame.playAkashSound();
                     soundOffButton.setChecked(false);
-                    billiardsGame.getAkash().setPan(1f, 0.1f);
+                    billiardsGame.getAkash().setPan(1f, 0.3f);
                     buttonChange();
                 }
             }
         });
-        Table musicTable = new Table();
-        musicTable.add(soundOffButton).size(199, 50); 
-        musicTable.add(soundOnButton).size(199, 50).pad(0, 2, 0, 0);
+        Table musicTable = createTable2(soundOffButton, soundOnButton);
 
         // UI Clicking
         // just make sound for every button noe true
@@ -287,11 +319,19 @@ public class SettingsMenu implements Screen {
         table.row();
         table.add(fpsLabel).size(400, 50);
         table.add(fpsField).size(400, 50);
+        table.row();
+        table.add(controlLabel).size(400, 50);
+        table.add(controlTable).size(400, 50).pad(2);
+        table.row();
+        table.add(flipLabel).size(400, 50);
+        table.add(flipTable).size(400, 50);
         stage.addActor(table);
 
         // Initialize Default Settings
         hiGraphicsButton.setChecked(true);
         soundOffButton.setChecked(true);
+        hoverButton.setChecked(true);
+        flipOn.setChecked(true);
         initialized = true;
     }
 
@@ -306,6 +346,12 @@ public class SettingsMenu implements Screen {
         stage.unfocus(fpsField);
     }
 
+    private Table createTable2(TextButton left, TextButton right) {
+        Table output = new Table();
+        output.add(left).size(199, 50);
+        output.add(right).size(199, 50).pad(0, 2, 0, 0);
+        return output;
+    }
 
 
 

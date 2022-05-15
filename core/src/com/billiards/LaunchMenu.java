@@ -66,9 +66,9 @@ public class LaunchMenu implements Screen {
         // Button Styler
         TextButtonStyle style = new TextButtonStyle();
         style.font = font;
-        style.up = new TextureRegionDrawable(new TextureRegion(new Texture("blueBorder.png"))); // up is when button released
-        style.down = new TextureRegionDrawable(new TextureRegion(new Texture("blueHoverBorder.png"))); // down is pressed
-        style.over = new TextureRegionDrawable(new TextureRegion(new Texture("bluePressBorder.png"))); 
+        style.up = new TextureRegionDrawable(new TextureRegion(new Texture("blue.png"))); // up is when button released
+        style.down = new TextureRegionDrawable(new TextureRegion(new Texture("blueHover.png"))); // down is pressed
+        style.over = new TextureRegionDrawable(new TextureRegion(new Texture("bluePress.png"))); 
         
         // Launch Button
         launchButton = new TextButton("Launch Game", style);

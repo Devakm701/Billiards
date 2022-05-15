@@ -11,7 +11,7 @@ public class Ball {
     public static final float SCALE = 10f;
     public static final float SCALE_INV = 1/SCALE;
     public static final float RADIUS_M = RADIUS_PX * SCALE_INV;
-    private static final float FRICTION = 0.99f;
+    private static final float FRICTION = 0.995f;
     private static final float LIMIT = 0.25f;
     private Sprite ballSprite;
     private Vector2 center;

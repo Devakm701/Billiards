@@ -75,7 +75,7 @@ public class PoolStick extends Sprite {
                 setOrigin(WIDTH + Ball.RADIUS_PX, HEIGHT/2);
                 setPosition(origin.x - WIDTH - Ball.RADIUS_PX, origin.y - HEIGHT / 2);
                 float rotation = (float)Math.toDegrees(Math.atan2(Billiards.HEIGHT-origin.y - in.getY(), in.getX() - origin.x));
-                if (!altControl) {
+                if (!Billiards.stickFlip) {
                     rotation += 180f;
                 }
                 setRotation(rotation);
@@ -127,7 +127,7 @@ public class PoolStick extends Sprite {
 
     private void launchCueBall(float v) {
         v = v*v;//(float)Math.pow(v, 3); // remaps v between 0 and 1 from linear to exponential curve, gives more natural feeling shots, lower b is closer to linear
-        v *= 600 * Ball.SCALE_INV;
+        v *= 1000 * Ball.SCALE_INV;
         double rad = Math.toRadians(getRotation());
         billiards.playCueSound();
         cueBall.setVelocity((float)( v * Math.cos(rad) ),(float)( v * Math.sin(rad) ) );
