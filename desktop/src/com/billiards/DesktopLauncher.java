@@ -15,6 +15,7 @@ public class DesktopLauncher {
         config.setWindowedMode(900, 600);
         config.setResizable(false);
         config.setTitle("8 Ball Pool");
+        config.useOpenGL3(true, 3, 2);
         config.setBackBufferConfig(8,8,8,8,16,0,16); //or 2 or 8 or 16
         config.setWindowIcon("8-ball.png");
         new Lwjgl3Application(new Billiards(), config);

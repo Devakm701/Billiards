@@ -61,6 +61,8 @@ public class Billiards extends Game {
     private Screen lastScreen = launchMenu;
     private Stage stage;
     private Button settingsButton;
+    private LinkedList<Ball> ballsOut;
+    private int ballsMoving;
     
 
     public static Circle[] holes = {
@@ -83,7 +85,7 @@ public class Billiards extends Game {
         settingsMenu = new SettingsMenu(this, background);
         this.setScreen(launchMenu); // enable launch menu 
         this.getScreen().show();
-        
+
         // Textures
         batch = new SpriteBatch();
         table = new Texture("stolenTableCropped.png");
@@ -218,6 +220,7 @@ public class Billiards extends Game {
         ballCircle.dispose();
         lastTime = System.currentTimeMillis();
         setFPS(FPS);
+        ballsOut = new LinkedList<>();
         
 
     
@@ -236,10 +239,19 @@ public class Billiards extends Game {
         batch.draw(background, 0, 0);
         batch.draw(table, 450 - table.getWidth() / 2, 0);
         cueBall.update();
+        ballsMoving = 0;
         for (Ball ball : balls) {
-            ball.update();
-            ball.getSprite().draw(batch);
+            if (ball.update()) {
+                removeBall(ball);
+            }
+            if (ball.isVisible()){
+                ball.getSprite().draw(batch);
+            }
+            if (ball.isMoving()) {
+                ballsMoving++;
+            }
         }
+        
         cueBall.getSprite().draw(batch);
         stick.draw(batch);
         batch.end();
@@ -367,6 +379,14 @@ public class Billiards extends Game {
 
     public int getFPS() {
         return FPS;
+    }
+
+    public void removeBall(Ball ball) {
+        world.destroyBody(ball.getBody());
+        ball.setVisible(false);
+        if (ball != cueBall) {
+            ballsOut.add(ball);
+        }
     }
 
     public void closeMenu() {

@@ -21,6 +21,8 @@ public class Ball {
     private Billiards billiardsGame;
     private float timer = 0f;
     private final int ballNum;
+    private boolean visible = true;
+
     
 
     public Ball(float initX, float initY, String fileName, Body body, int ballNum) { //add after balls are properly implemented
@@ -48,7 +50,7 @@ public class Ball {
         return ballCircle;
     }
 
-    public void update() {
+    public boolean update() {
         // float dst = ballBody.getLinearVelocity().dst(0, 0);
         // //System.out.println(dst);
         // if (dst * SCALE / 2 == 0) {//< 0.00047) { // scale was at 2
@@ -56,6 +58,9 @@ public class Ball {
         //     isMoving = false;
         //     return;
         // }
+        if (!visible) {
+            return false;
+        }
         Vector2 vBall = ballBody.getLinearVelocity();
         float vAngle = ballBody.getAngularVelocity();
         isMoving = true;
@@ -89,15 +94,19 @@ public class Ball {
         for (Circle hole : Billiards.holes) {
             if (hole.contains(center) && ballNum != 0) {
                 float dst = center.dst(hole.x, hole.y); 
+                System.out.println(dst);
                 if (dst < LIMIT) {
                     move(hole.x, hole.y);
                     this.setVelocity(0, 0);
+                    return true;
                 }
                 else {
                     ballBody.setLinearVelocity(new Vector2(hole.x, hole.y).sub(center).scl(0.5f));
                 }
+
             }
         } 
+        return false;
     }
 
     public void setVelocity(float vX, float vY) {
@@ -112,6 +121,20 @@ public class Ball {
     public Vector2 getCenter() {
         return center;
     }
+
+    public void setVisible(boolean visibility) {
+        visible = visibility;
+    }
+
+    public boolean isVisible(){
+        return visible;
+    }
+
+
+
+    public Body getBody() {
+        return ballBody;
+    } 
 
     public void setSpin() {
 
