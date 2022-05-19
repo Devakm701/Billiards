@@ -62,7 +62,6 @@ public class Billiards extends Game {
     private Stage stage;
     private Button settingsButton;
     private LinkedList<Ball> ballsOut;
-    private int ballsMoving;
     
 
     public static Circle[] holes = {
@@ -107,9 +106,9 @@ public class Billiards extends Game {
         CircleShape ballCircle = new CircleShape();
         ballCircle.setRadius(Ball.RADIUS_M);
         fixDef.shape = ballCircle;
-        fixDef.restitution = 0.75f; // restitution is how much of the speed remains after a collision
+        fixDef.restitution = 0.5f; // restitution is how much of the speed remains after a collision
         //fixDef.friction = 0.1f;
-        fixDef.friction = 0.01f;
+        fixDef.friction = 0.99f;
         fixDef.density = 1f;
         Body ball = world.createBody(ballDef);
         ball.createFixture(fixDef);
@@ -124,7 +123,7 @@ public class Billiards extends Game {
                 Body tmpBall = world.createBody(ballDef);
                 tmpBall.createFixture(fixDef);
                 String file = "sphere-17_20x20.png";
-                if (num == 5) {
+                if (num == 5)  {
                     file = "sphere-11_20x20.png";
                 } else if (num % 2 == 0) {
                     file = "sphere-00_20x20.png";
@@ -239,7 +238,7 @@ public class Billiards extends Game {
         batch.draw(background, 0, 0);
         batch.draw(table, 450 - table.getWidth() / 2, 0);
         cueBall.update();
-        ballsMoving = 0;
+        int ballsMoving = 0;
         for (Ball ball : balls) {
             if (ball.update()) {
                 removeBall(ball);

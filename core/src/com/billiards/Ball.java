@@ -29,6 +29,8 @@ public class Ball {
         ballSprite = new Sprite(new Texture(fileName));
         center = new Vector2(initX, initY);
         ballBody = body;
+        body.setLinearDamping(0.5f);
+        body.setAngularDamping(0.5f);
         move(initX, initY);
         this.ballNum = ballNum;
     }
@@ -77,8 +79,8 @@ public class Ball {
             ballBody.setAngularVelocity(0);
             isMoving = false;
         } else {
-            ballBody.setLinearVelocity(vBall.scl(FRICTION));
-            ballBody.setAngularVelocity(vAngle * FRICTION);
+            // ballBody.setLinearVelocity(vBall.scl(FRICTION));
+            // ballBody.setAngularVelocity(vAngle * FRICTION);
         }
         //ballBody.setLinearVelocity(vBall.scl(FRICTION));
         //
