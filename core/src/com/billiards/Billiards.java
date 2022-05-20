@@ -9,9 +9,12 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
@@ -38,7 +41,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 public class Billiards extends Game {
     public static final int WIDTH = 900;
     public static final int HEIGHT = 600;
-    private static final float PHYSICS_DT = 1/144f;
+    public static final float PHYSICS_DT = 1/144f;
+    public static final Vector2 TABLE_CENTER = new Vector2(450,250);
     public static boolean altControl = true;
     public static boolean stickFlip = true;
     private float volume = 1f;
@@ -62,7 +66,10 @@ public class Billiards extends Game {
     private Stage stage;
     private Button settingsButton;
     private LinkedList<Ball> ballsOut;
-    
+    private Environment environment;
+    private OrthographicCamera camera;
+    private ModelBatch modelBatch;
+
 
     public static Circle[] holes = {
         new Circle(150, 404, 17),
@@ -112,7 +119,7 @@ public class Billiards extends Game {
         fixDef.density = 1f;
         Body ball = world.createBody(ballDef);
         ball.createFixture(fixDef);
-        cueBall = new Ball(300, 250, "sphere-19_20x20.png", ball, 0);
+        cueBall = new Ball(300, 250, "brightWhite.png", ball, 0);
         stick.setCueBall(cueBall);
         
         int num = 1;
@@ -122,11 +129,11 @@ public class Billiards extends Game {
             for (int j = 0; j <= i; j++) {
                 Body tmpBall = world.createBody(ballDef);
                 tmpBall.createFixture(fixDef);
-                String file = "sphere-17_20x20.png";
+                String file = "black.png";
                 if (num == 5)  {
-                    file = "sphere-11_20x20.png";
+                    file = "red.png";
                 } else if (num % 2 == 0) {
-                    file = "sphere-00_20x20.png";
+                    file = "gray.png";
                 }
                 balls.add(new Ball(600 + i * 18, 250 + j * 20 - downShift, file, tmpBall, num));
                 num++;

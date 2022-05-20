@@ -45,7 +45,7 @@ public class LaunchMenu implements Screen {
     public void show() {
         // Create stage to draw and create background 
         stage = new Stage();
-        title = new Image(new Texture("PooLogo2_50.png"));
+        title = new Image(new Texture("PoolLogo.png"));
         stage.addActor(background);
         background.setPosition(0f, 0f);
         stage.addActor(title);

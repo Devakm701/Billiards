@@ -1,7 +1,10 @@
 package com.billiards;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -13,7 +16,7 @@ public class Ball {
     public static final float RADIUS_M = RADIUS_PX * SCALE_INV;
     private static final float FRICTION = 0.995f;
     private static final float LIMIT = 0.25f;
-    private Sprite ballSprite;
+    private Sprite ballShine;
     private Vector2 center;
     private Circle ballCircle;
     private Body ballBody;
@@ -22,11 +25,14 @@ public class Ball {
     private float timer = 0f;
     private final int ballNum;
     private boolean visible = true;
+    private ModelInstance ball3D;
+    private Sprite shadow;
+    
 
     
 
     public Ball(float initX, float initY, String fileName, Body body, int ballNum) { //add after balls are properly implemented
-        ballSprite = new Sprite(new Texture(fileName));
+        ballShine = new Sprite(new Texture(fileName));
         center = new Vector2(initX, initY);
         ballBody = body;
         body.setLinearDamping(0.5f);
@@ -38,13 +44,13 @@ public class Ball {
     public void move(float x, float y) {
         ballBody.setTransform(x * SCALE_INV, y * SCALE_INV, ballBody.getAngle());
         ballBody.setLinearVelocity(new Vector2(0, 0));
-        ballSprite.setPosition(x - RADIUS_PX, y - RADIUS_PX);
+        ballShine.setPosition(x - RADIUS_PX, y - RADIUS_PX);
         center.x = x;
         center.y = y;
     }
 
     public Sprite getSprite() {
-        return ballSprite;
+        return ballShine;
     }
 
     public Circle getCircle() {
@@ -68,11 +74,11 @@ public class Ball {
         isMoving = true;
         float x = ballBody.getPosition().x * SCALE;
         float y = ballBody.getPosition().y * SCALE;
-        ballSprite.setPosition(x - RADIUS_PX, y - RADIUS_PX);
-        ballSprite.setRotation((float)Math.toDegrees(ballBody.getAngle()));
+        ballShine.setPosition(x - RADIUS_PX, y - RADIUS_PX);
+        ballShine.setRotation((float)Math.toDegrees(ballBody.getAngle()));
         center.x = x;
         center.y = y;
-        
+
 
         if (Math.abs(vBall.x) < LIMIT && Math.abs(vBall.y) < LIMIT && Math.abs(vAngle) < LIMIT) {
             ballBody.setLinearVelocity(new Vector2(0, 0));
@@ -109,6 +115,14 @@ public class Ball {
             }
         } 
         return false;
+    }
+
+    public void drawShadow(Batch batch) {
+        Vector2 fromCenter = center.sub(Billiards.TABLE_CENTER);
+        double dir = Math.atan2(fromCenter.y, fromCenter.x);
+        float dst = fromCenter.dst(0,0);
+        shadow.setPosition(dst * (float)Math.cos(dir),dst * (float)Math.cos(dir));
+        shadow.draw(batch);
     }
 
     public void setVelocity(float vX, float vY) {
