@@ -1,5 +1,6 @@
 package com.billiards;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -27,11 +28,12 @@ public class Ball {
     private boolean visible = true;
     private ModelInstance ball3D;
     private Sprite shadow;
-    
+    private boolean soundPlayed = false;
+    private boolean moveable = false;
 
     
 
-    public Ball(float initX, float initY, String fileName, Body body, int ballNum) { //add after balls are properly implemented
+    public Ball(float initX, float initY,Billiards billiards , String fileName, Body body, int ballNum, Sprite shadow) { //add after balls are properly implemented
         ballShine = new Sprite(new Texture(fileName));
         center = new Vector2(initX, initY);
         ballBody = body;
@@ -39,6 +41,8 @@ public class Ball {
         body.setAngularDamping(0.5f);
         move(initX, initY);
         this.ballNum = ballNum;
+        this.shadow = shadow;
+        billiardsGame = billiards;
     }
 
     public void move(float x, float y) {
@@ -102,32 +106,46 @@ public class Ball {
         for (Circle hole : Billiards.holes) {
             if (hole.contains(center) && ballNum != 0) {
                 float dst = center.dst(hole.x, hole.y); 
-                System.out.println(dst);
-                if (dst < LIMIT) {
+                // System.out.println(dst);
+                if (dst < LIMIT * 2) {
                     move(hole.x, hole.y);
                     this.setVelocity(0, 0);
                     return true;
                 }
                 else {
                     ballBody.setLinearVelocity(new Vector2(hole.x, hole.y).sub(center).scl(0.5f));
+                    if (!soundPlayed) {
+                        billiardsGame.playPocketSound();
+                        soundPlayed = true;
+                    }
+                    
                 }
 
             }
         } 
+        
+        if (moveable) {
+            float dx = center.x - Gdx.input.getX();
+            float dy = center.y - Gdx.input.getY();
+            if (dy*dy + dx*dx < RADIUS_PX * RADIUS_PX) {
+                move(Gdx.input.getX(), Gdx.input.getY());
+            }
+        }
         return false;
     }
 
     public void drawShadow(Batch batch) {
-        Vector2 fromCenter = center.sub(Billiards.TABLE_CENTER);
+        
+        Vector2 fromCenter = new Vector2(center.x - Billiards.TABLE_CENTER.x, center.y - Billiards.TABLE_CENTER.y);
         double dir = Math.atan2(fromCenter.y, fromCenter.x);
-        float dst = fromCenter.dst(0,0);
-        shadow.setPosition(dst * (float)Math.cos(dir),dst * (float)Math.cos(dir));
+        float dst = fromCenter.dst(0,0)/334f * RADIUS_PX / 2;
+        shadow.setPosition(dst * (float)Math.cos(dir) + center.x - shadow.getWidth() / 2,dst * (float)Math.sin(dir)+ center.y -  shadow.getHeight() / 2);
         shadow.draw(batch);
     }
 
     public void setVelocity(float vX, float vY) {
         ballBody.setLinearVelocity(new Vector2(vX, vY));
-        //System.out.println("x: " + vX + " y: " + vY);
+        // System.out.println("x: " + vX + " y: " + vY);
     }
 
     public boolean isMoving() {
@@ -146,7 +164,9 @@ public class Ball {
         return visible;
     }
 
-
+    public void setMoveable(boolean moveable) {
+        this.moveable = moveable;
+    }
 
     public Body getBody() {
         return ballBody;

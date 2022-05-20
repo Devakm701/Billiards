@@ -69,6 +69,11 @@ public class PoolStick extends Sprite {
         }
         /*---- Checks if user wants to rotate pool stick ----*/
         else if (chargeDist == 0) {
+            float dx = cueBall.getCenter().x - Gdx.input.getX();
+            float dy = cueBall.getCenter().y - Gdx.input.getY();
+            if (dy*dy + dx*dx < Ball.RADIUS_PX * Ball.RADIUS_PX) {
+                return;
+            }
             startPoint = null;
             setVisible(!cueBall.isMoving());
             if (altControl || (!altControl && left)) {
@@ -87,7 +92,7 @@ public class PoolStick extends Sprite {
         else {
             startPoint = null;
             drawCharged(chargeDist-7, batch);
-            if (outCharge > 0 && chargeAvailable) {
+            if (outCharge > 10 && chargeAvailable) {
                 //System.out.println(outCharge / MAX_CHARGE); // debug code
                 launchCueBall(outCharge / MAX_CHARGE);
             } 

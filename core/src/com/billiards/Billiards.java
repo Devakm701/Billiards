@@ -11,6 +11,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -52,7 +53,7 @@ public class Billiards extends Game {
     private SpriteBatch batch;
     private LaunchMenu launchMenu;
     private SettingsMenu settingsMenu;
-    private Texture table, background;
+    private Texture table, background, tableMask;
     private PoolStick stick;
     private LinkedList<Ball> balls; 
     private Ball cueBall;
@@ -61,6 +62,7 @@ public class Billiards extends Game {
     private Sound ballSound;
     private Sound cueSound;
     private Sound buttonClickSound;
+    private Sound pocketSound;
     private Music akashProject; 
     private Screen lastScreen = launchMenu;
     private Stage stage;
@@ -96,7 +98,7 @@ public class Billiards extends Game {
         batch = new SpriteBatch();
         table = new Texture("stolenTableCropped.png");
         stick = new PoolStick(new Texture("pool stick.png"), 450f , 300f, this);
-
+        tableMask = new Texture("TableMask.png");
         // Create Box2D world
         world = new World(new Vector2(0, 0), true);
         world.setContactListener(new CollisionListener());
@@ -105,6 +107,7 @@ public class Billiards extends Game {
         drawShape = new ShapeRenderer();
 
         // Ball Creation
+        Sprite ballShadow = new Sprite(new Texture("shadowResized.png"));
         balls = new LinkedList<>();
         BodyDef ballDef = new BodyDef();
         FixtureDef fixDef = new FixtureDef();
@@ -119,7 +122,7 @@ public class Billiards extends Game {
         fixDef.density = 1f;
         Body ball = world.createBody(ballDef);
         ball.createFixture(fixDef);
-        cueBall = new Ball(300, 250, "brightWhite.png", ball, 0);
+        cueBall = new Ball(300, 250, this, "brightWhite.png", ball, 0, ballShadow);
         stick.setCueBall(cueBall);
         
         int num = 1;
@@ -135,7 +138,7 @@ public class Billiards extends Game {
                 } else if (num % 2 == 0) {
                     file = "gray.png";
                 }
-                balls.add(new Ball(600 + i * 18, 250 + j * 20 - downShift, file, tmpBall, num));
+                balls.add(new Ball(600 + i * 18, 250 + j * 20 - downShift, this, file, tmpBall, num, ballShadow));
                 num++;
             }
             downShift += 10;
@@ -201,6 +204,7 @@ public class Billiards extends Game {
         cueSound = Gdx.audio.newSound(Gdx.files.internal("cueHit.wav"));
         akashProject = Gdx.audio.newMusic(Gdx.files.internal("Akash Music Genesis Project.wav"));
         buttonClickSound = Gdx.audio.newSound(Gdx.files.internal("DoubleClick.wav"));
+        pocketSound = Gdx.audio.newSound(Gdx.files.internal("pocketHit.wav"));
 
         // Settings Button
         stage = new Stage();
@@ -251,14 +255,18 @@ public class Billiards extends Game {
                 removeBall(ball);
             }
             if (ball.isVisible()){
+                ball.drawShadow(batch);
                 ball.getSprite().draw(batch);
+                
             }
             if (ball.isMoving()) {
                 ballsMoving++;
             }
         }
         
+        cueBall.drawShadow(batch);
         cueBall.getSprite().draw(batch);
+        batch.draw(tableMask, 450 - table.getWidth() / 2, 0);
         stick.draw(batch);
         batch.end();
         drawShape.begin(ShapeType.Line);
@@ -435,13 +443,17 @@ public class Billiards extends Game {
     }
 
     private class CollisionListener implements ContactListener {
-
+        
         @Override
         public void beginContact(Contact contact) {
+            float v = volume/ 25f *contact.getFixtureA().getBody().getLinearVelocity().add(contact.getFixtureB().getBody().getLinearVelocity()).dst(0,0);
+            if (v < 0.05) {
+                return;
+            }
             if ((contact.getFixtureA().getShape() instanceof ChainShape) || (contact.getFixtureB().getShape() instanceof ChainShape)) {
-                cushionSound.play(volume);
+                cushionSound.play(v);
             } else {//if (contact.getFixtureA().getBody().getLinearVelocity() < V_MIN){
-                ballSound.play(volume);
+                ballSound.play(v);
             }
         }
 
@@ -454,6 +466,10 @@ public class Billiards extends Game {
         @Override
         public void postSolve(Contact contact, ContactImpulse impulse) {}
 
+    }
+
+    public void playPocketSound() {
+        pocketSound.play(volume * 0.6f);
     }
 
     public void destroyBody(Body body) {
