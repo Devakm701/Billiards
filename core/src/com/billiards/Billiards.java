@@ -468,11 +468,20 @@ public class Billiards extends Game {
 
     }
 
+    public void win(Player player) {
+
+    }
+
+
     public void playPocketSound() {
         pocketSound.play(volume * 0.6f);
     }
 
     public void destroyBody(Body body) {
         world.destroyBody(body);
+    }
+
+    public void cueBallMovable() {
+        
     }
 }

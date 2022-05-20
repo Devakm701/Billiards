@@ -168,6 +168,10 @@ public class Ball {
         this.moveable = moveable;
     }
 
+    public int getNum() {
+        return ballNum;
+    }
+
     public Body getBody() {
         return ballBody;
     } 
