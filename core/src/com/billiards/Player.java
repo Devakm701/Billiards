@@ -6,9 +6,11 @@ public class Player {
     private Boolean solids = null;
     private LinkedList<Ball> ballsPotted;
     private boolean eightBallAvailable = false;
+    private String playerName;
     
-    public Player() {
+    public Player(String name) {
         this.ballsPotted = new LinkedList<>();
+        playerName = name;
     }
 
     public void setType(boolean solid) {
@@ -28,5 +30,9 @@ public class Player {
 
     public boolean is8BallAvailable() {
         return eightBallAvailable;
+    }
+
+    public String getName() {
+        return playerName;
     }
 }

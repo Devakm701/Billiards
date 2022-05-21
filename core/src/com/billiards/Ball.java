@@ -1,6 +1,8 @@
 package com.billiards;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -30,6 +32,7 @@ public class Ball {
     private Sprite shadow;
     private boolean soundPlayed = false;
     private boolean moveable = false;
+    private boolean leftPressed = false;
 
     
 
@@ -37,8 +40,9 @@ public class Ball {
         ballShine = new Sprite(new Texture(fileName));
         center = new Vector2(initX, initY);
         ballBody = body;
-        body.setLinearDamping(0.5f);
+        body.setLinearDamping(0.75f);
         body.setAngularDamping(0.5f);
+        ballCircle = new Circle(initX, initY, RADIUS_PX);
         move(initX, initY);
         this.ballNum = ballNum;
         this.shadow = shadow;
@@ -104,12 +108,16 @@ public class Ball {
         // }
 
         for (Circle hole : Billiards.holes) {
-            if (hole.contains(center) && ballNum != 0) {
+            if (hole.contains(center)) {
                 float dst = center.dst(hole.x, hole.y); 
                 // System.out.println(dst);
                 if (dst < LIMIT * 2) {
                     move(hole.x, hole.y);
                     this.setVelocity(0, 0);
+                    if (ballNum == 0) {
+                        billiardsGame.resetCueBall();
+                        soundPlayed = false;
+                    }
                     return true;
                 }
                 else {
@@ -123,17 +131,38 @@ public class Ball {
 
             }
         } 
-        
+
         if (moveable) {
-            float dx = center.x - Gdx.input.getX();
-            float dy = center.y - Gdx.input.getY();
-            if (dy*dy + dx*dx < RADIUS_PX * RADIUS_PX) {
-                move(Gdx.input.getX(), Gdx.input.getY());
+            if (Gdx.input.isButtonPressed(Buttons.LEFT) || leftPressed){
+                int mouseX = Gdx.input.getX();
+                int mouseY = Gdx.input.getY();
+                
+                for (Ball b : billiardsGame.getBallList()) {
+                    Vector2 bCenter = b.getCenter();
+                    float dx = bCenter.x - mouseX;
+                    float dy = bCenter.y - (Billiards.HEIGHT - mouseY);
+                    if (dx*dx + dy*dy <  4 * RADIUS_PX * RADIUS_PX) {
+                        return false;
+                    }
+                }
+                if (this.getCircle().contains(mouseX,Billiards.HEIGHT - mouseY) || leftPressed) {
+                    System.out.println("a");
+                    move(mouseX, Billiards.HEIGHT - mouseY);
+                    billiardsGame.setStickVisible(false);
+                    leftPressed = true;
+                }
+                if (!Gdx.input.isButtonPressed(Buttons.LEFT)) {
+                    leftPressed = false;
+                }
             }
-        }
+            else if (!isMoving){
+                billiardsGame.movePoolStick(center);
+                billiardsGame.setStickVisible(true);
+            }
+        } 
         return false;
     }
-
+    
     public void drawShadow(Batch batch) {
         
         Vector2 fromCenter = new Vector2(center.x - Billiards.TABLE_CENTER.x, center.y - Billiards.TABLE_CENTER.y);

@@ -11,9 +11,12 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -49,6 +52,8 @@ public class Billiards extends Game {
     private float volume = 1f;
     private int FPS = 144;
     private long lastTime;
+    public boolean turnUpdated = false;
+    public boolean noBallsMoving = true;
     private static ShapeRenderer drawShape;
     private SpriteBatch batch;
     private LaunchMenu launchMenu;
@@ -71,6 +76,8 @@ public class Billiards extends Game {
     private Environment environment;
     private OrthographicCamera camera;
     private ModelBatch modelBatch;
+    private GameProcessor game;
+    private BitmapFont font;
 
 
     public static Circle[] holes = {
@@ -94,11 +101,24 @@ public class Billiards extends Game {
         this.setScreen(launchMenu); // enable launch menu 
         this.getScreen().show();
 
-        // Textures
+
+        // Game and Texture initializtion
         batch = new SpriteBatch();
         table = new Texture("stolenTableCropped.png");
         stick = new PoolStick(new Texture("pool stick.png"), 450f , 300f, this);
         tableMask = new Texture("TableMask.png");
+        game = new GameProcessor(this);
+        font = new BitmapFont();
+        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("arial.ttf")); 
+        FreeTypeFontParameter fontParam = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        fontParam.size = 40;
+        fontParam.borderWidth = 1;
+        fontParam.borderColor = Color.BLACK;
+        fontParam.color = Color.WHITE;
+        font = fontGenerator.generateFont(fontParam);
+        fontGenerator.dispose(); 
+
+
         // Create Box2D world
         world = new World(new Vector2(0, 0), true);
         world.setContactListener(new CollisionListener());
@@ -153,7 +173,6 @@ public class Billiards extends Game {
         //     new Vector2(WIDTH* Ball.SCALE_INV, HEIGHT* Ball.SCALE_INV),
         //     new Vector2(0, HEIGHT* Ball.SCALE_INV)
         // };
-
         Vector2[] tableOutline = {
             new Vector2(183, 396),
             new Vector2(430, 396),
@@ -247,12 +266,15 @@ public class Billiards extends Game {
         world.step(PHYSICS_DT, 40, 40);
         // world.step(Math.min(Gdx.graphics.getDeltaTime(), 0.15f), 6, 2);
         batch.draw(background, 0, 0);
+        font.draw(batch, "Player 1:", 50, HEIGHT - 10);
+        font.draw(batch, "Player 2:", 700, HEIGHT - 10);
         batch.draw(table, 450 - table.getWidth() / 2, 0);
         cueBall.update();
         int ballsMoving = 0;
+        LinkedList<Ball> ballsPotted = new LinkedList<>();
         for (Ball ball : balls) {
             if (ball.update()) {
-                removeBall(ball);
+                removeBall(ball, ballsPotted);
             }
             if (ball.isVisible()){
                 ball.drawShadow(batch);
@@ -263,9 +285,20 @@ public class Billiards extends Game {
                 ballsMoving++;
             }
         }
+        noBallsMoving = ballsMoving == 0;
+        if (noBallsMoving) {
+            
+            // if (!turnUpdated) {
+                game.updateTurn(ballsPotted);
+                turnUpdated = true;
+            // }
+        }
         
-        cueBall.drawShadow(batch);
-        cueBall.getSprite().draw(batch);
+        
+        if (cueBall.isVisible()) {
+            cueBall.drawShadow(batch);
+            cueBall.getSprite().draw(batch);
+        }
         batch.draw(tableMask, 450 - table.getWidth() / 2, 0);
         stick.draw(batch);
         batch.end();
@@ -395,12 +428,18 @@ public class Billiards extends Game {
         return FPS;
     }
 
-    public void removeBall(Ball ball) {
+    public void removeBall(Ball ball, LinkedList<Ball> ballsPotted) {
+        ballsPotted.add(ball);
+        if (ball.getNum() == 0) {
+            cueBall.setVisible(false);
+            return;
+        }
         world.destroyBody(ball.getBody());
         ball.setVisible(false);
         if (ball != cueBall) {
             ballsOut.add(ball);
         }
+        
     }
 
     public void closeMenu() {
@@ -442,6 +481,10 @@ public class Billiards extends Game {
         return stick.getTexture();
     }
 
+    public void movePoolStick(Vector2 v) {
+        stick.move(v);
+    }
+
     private class CollisionListener implements ContactListener {
         
         @Override
@@ -469,7 +512,7 @@ public class Billiards extends Game {
     }
 
     public void win(Player player) {
-
+        System.out.println(player.getName() + " wins");
     }
 
 
@@ -481,7 +524,14 @@ public class Billiards extends Game {
         world.destroyBody(body);
     }
 
-    public void cueBallMovable() {
-        
+    public void resetCueBall() {
+        System.out.println("cue ball reset");
+        cueBall.setMoveable(true);
+        cueBall.move(450, 250);
+        cueBall.setVisible(true);
+    }
+
+    public void setStickVisible(boolean visibility) {
+        stick.setVisible(visibility);
     }
 }

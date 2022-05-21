@@ -43,13 +43,20 @@ public class PoolStick extends Sprite {
     public void draw(Batch batch) {
         /*---- Makes Pool Stick only visible when cue ball is not moving ----*/
         if (!visible) {
-            if (!cueBall.isMoving()) {
+            if (billiards.noBallsMoving && !cueBall.isMoving()) {
                 setVisible(true);
                 move(cueBall.getCenter());
                 //drawCharged(0, batch);
             }
             return;
         }
+        // float dx = cueBall.getCenter().x - Gdx.input.getX();
+        // float dy = cueBall.getCenter().y - Gdx.input.getY();
+        // if (dy*dy + dx*dx < Ball.RADIUS_PX * Ball.RADIUS_PX) {
+        //     move(cueBall.getCenter());
+        //     chargeDist = 0;
+        //     return;
+        // }
         
         // Used to check input
         boolean left = in.isButtonPressed(Buttons.LEFT);
@@ -69,11 +76,6 @@ public class PoolStick extends Sprite {
         }
         /*---- Checks if user wants to rotate pool stick ----*/
         else if (chargeDist == 0) {
-            float dx = cueBall.getCenter().x - Gdx.input.getX();
-            float dy = cueBall.getCenter().y - Gdx.input.getY();
-            if (dy*dy + dx*dx < Ball.RADIUS_PX * Ball.RADIUS_PX) {
-                return;
-            }
             startPoint = null;
             setVisible(!cueBall.isMoving());
             if (altControl || (!altControl && left)) {
@@ -135,6 +137,7 @@ public class PoolStick extends Sprite {
         v *= 1000 * Ball.SCALE_INV;
         double rad = Math.toRadians(getRotation());
         billiards.playCueSound();
+        cueBall.setMoveable(false);
         cueBall.setVelocity((float)( v * Math.cos(rad) ),(float)( v * Math.sin(rad) ) );
     }
 
