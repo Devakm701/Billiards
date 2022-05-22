@@ -120,6 +120,10 @@ public class PoolStick extends Sprite {
         visible = visibility;
     }
 
+    public boolean isVisible() {
+        return visible;
+    }
+
     public void move(Vector2 v) {
         origin.x = v.x;
         origin.y = v.y;

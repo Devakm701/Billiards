@@ -36,23 +36,26 @@ public class Ball {
 
     
 
-    public Ball(float initX, float initY,Billiards billiards , String fileName, Body body, int ballNum, Sprite shadow) { //add after balls are properly implemented
+    public Ball(float initX, float initY,Billiards billiards , String fileName, Body body, int ballNum, Sprite shadow, ModelInstance instance) { //add after balls are properly implemented
         ballShine = new Sprite(new Texture(fileName));
         center = new Vector2(initX, initY);
         ballBody = body;
-        body.setLinearDamping(0.75f);
+        body.setLinearDamping(0.99f);
         body.setAngularDamping(0.5f);
         ballCircle = new Circle(initX, initY, RADIUS_PX);
+        billiardsGame = billiards;
+        ball3D = instance;
         move(initX, initY);
         this.ballNum = ballNum;
         this.shadow = shadow;
-        billiardsGame = billiards;
     }
 
     public void move(float x, float y) {
         ballBody.setTransform(x * SCALE_INV, y * SCALE_INV, ballBody.getAngle());
-        ballBody.setLinearVelocity(new Vector2(0, 0));
+        // ballBody.setLinearVelocity(new Vector2(0, 0));
         ballShine.setPosition(x - RADIUS_PX, y - RADIUS_PX);
+        ball3D.transform.setTranslation(mapX(x), mapY(y), 0);
+        billiardsGame.movePoolStick(new Vector2(x, y));
         center.x = x;
         center.y = y;
     }
@@ -83,7 +86,8 @@ public class Ball {
         float x = ballBody.getPosition().x * SCALE;
         float y = ballBody.getPosition().y * SCALE;
         ballShine.setPosition(x - RADIUS_PX, y - RADIUS_PX);
-        ballShine.setRotation((float)Math.toDegrees(ballBody.getAngle()));
+        // ballShine.setRotation((float)Math.toDegrees(ballBody.getAngle()));
+        move(x, y);
         center.x = x;
         center.y = y;
 
@@ -114,6 +118,7 @@ public class Ball {
                 if (dst < LIMIT * 2) {
                     move(hole.x, hole.y);
                     this.setVelocity(0, 0);
+                    isMoving = false;
                     if (ballNum == 0) {
                         billiardsGame.resetCueBall();
                         soundPlayed = false;
@@ -137,6 +142,11 @@ public class Ball {
                 int mouseX = Gdx.input.getX();
                 int mouseY = Gdx.input.getY();
                 
+                if (mouseX < 158 + RADIUS_PX &&  mouseX > 741 - RADIUS_PX &&
+                    mouseY < 104 + RADIUS_PX && mouseY > 396 - RADIUS_PX) {
+                    return false;        
+                }
+
                 for (Ball b : billiardsGame.getBallList()) {
                     Vector2 bCenter = b.getCenter();
                     float dx = bCenter.x - mouseX;
@@ -146,7 +156,6 @@ public class Ball {
                     }
                 }
                 if (this.getCircle().contains(mouseX,Billiards.HEIGHT - mouseY) || leftPressed) {
-                    System.out.println("a");
                     move(mouseX, Billiards.HEIGHT - mouseY);
                     billiardsGame.setStickVisible(false);
                     leftPressed = true;
@@ -193,6 +202,10 @@ public class Ball {
         return visible;
     }
 
+    public ModelInstance getModel() {
+        return ball3D;
+    }
+
     public void setMoveable(boolean moveable) {
         this.moveable = moveable;
     }
@@ -205,7 +218,15 @@ public class Ball {
         return ballBody;
     } 
 
-    public void setSpin() {
+    public void setMoving(boolean moving) {
+        moving = false;
+    }
+    
+    private float mapX(float x) {
+        return x / 10f - 45f;
+    }
 
+    private float mapY(float y) {
+        return y / 10f - 30f;
     }
 }

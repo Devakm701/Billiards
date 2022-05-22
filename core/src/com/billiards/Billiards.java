@@ -8,7 +8,9 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -18,7 +20,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
@@ -41,6 +47,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.JsonReader;
 
 public class Billiards extends Game {
     public static final int WIDTH = 900;
@@ -52,7 +59,7 @@ public class Billiards extends Game {
     private float volume = 1f;
     private int FPS = 144;
     private long lastTime;
-    public boolean turnUpdated = false;
+    public static boolean turnUpdated = false;
     public boolean noBallsMoving = true;
     private static ShapeRenderer drawShape;
     private SpriteBatch batch;
@@ -78,6 +85,7 @@ public class Billiards extends Game {
     private ModelBatch modelBatch;
     private GameProcessor game;
     private BitmapFont font;
+    private  boolean debugLines = false;
 
 
     public static Circle[] holes = {
@@ -116,7 +124,20 @@ public class Billiards extends Game {
         fontParam.borderColor = Color.BLACK;
         fontParam.color = Color.WHITE;
         font = fontGenerator.generateFont(fontParam);
-        fontGenerator.dispose(); 
+        fontGenerator.dispose();
+        environment = new Environment();
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 1f, 1f, 1f, 1f));
+        camera = new OrthographicCamera();
+        modelBatch = new ModelBatch();
+
+        // Initialize camera for 3d models
+        camera = new OrthographicCamera(Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 10);
+        camera.position.set(0, 0, 1);
+        camera.lookAt(0, 0, -10);
+        camera.near = 0f;
+        camera.far = 1f;
+        camera.update();
+
 
 
         // Create Box2D world
@@ -138,11 +159,13 @@ public class Billiards extends Game {
         fixDef.shape = ballCircle;
         fixDef.restitution = 0.5f; // restitution is how much of the speed remains after a collision
         //fixDef.friction = 0.1f;
-        fixDef.friction = 0.99f;
+        fixDef.friction = 0.1f;
         fixDef.density = 1f;
         Body ball = world.createBody(ballDef);
         ball.createFixture(fixDef);
-        cueBall = new Ball(300, 250, this, "brightWhite.png", ball, 0, ballShadow);
+        G3dModelLoader modelLoader = new G3dModelLoader(new JsonReader());
+        Model cueModel = modelLoader.loadModel(Gdx.files.internal("0ball.g3dj"));
+        cueBall = new Ball(300, 250, this, "shine2.png", ball, 0, ballShadow, new ModelInstance(cueModel));
         stick.setCueBall(cueBall);
         
         int num = 1;
@@ -152,18 +175,21 @@ public class Billiards extends Game {
             for (int j = 0; j <= i; j++) {
                 Body tmpBall = world.createBody(ballDef);
                 tmpBall.createFixture(fixDef);
-                String file = "black.png";
+                String file = "shine2.png";
                 if (num == 5)  {
-                    file = "red.png";
+                    file = "shine2.png";
                 } else if (num % 2 == 0) {
-                    file = "gray.png";
+                    file = "shine2.png";
                 }
-                balls.add(new Ball(600 + i * 18, 250 + j * 20 - downShift, this, file, tmpBall, num, ballShadow));
+                Model ballModel = modelLoader.loadModel(Gdx.files.internal(num + "ball.g3dj")); // assets/BallModels/0ball.g3dj
+
+                balls.add(new Ball(600 + i * 18, 250 + j * 20 - downShift, this, file, tmpBall, num, ballShadow, new ModelInstance(ballModel)));
                 num++;
             }
             downShift += 10;
             h++;
         }
+
 
         // Initialize outline
         ChainShape border = new ChainShape();
@@ -252,7 +278,7 @@ public class Billiards extends Game {
         ballsOut = new LinkedList<>();
         
 
-    
+        balls.add(cueBall);
     }
 
     @Override
@@ -261,7 +287,8 @@ public class Billiards extends Game {
             super.render();
             return;
         }
-        
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         batch.begin();
         world.step(PHYSICS_DT, 40, 40);
         // world.step(Math.min(Gdx.graphics.getDeltaTime(), 0.15f), 6, 2);
@@ -269,7 +296,7 @@ public class Billiards extends Game {
         font.draw(batch, "Player 1:", 50, HEIGHT - 10);
         font.draw(batch, "Player 2:", 700, HEIGHT - 10);
         batch.draw(table, 450 - table.getWidth() / 2, 0);
-        cueBall.update();
+        // cueBall.update();
         int ballsMoving = 0;
         LinkedList<Ball> ballsPotted = new LinkedList<>();
         for (Ball ball : balls) {
@@ -277,9 +304,7 @@ public class Billiards extends Game {
                 removeBall(ball, ballsPotted);
             }
             if (ball.isVisible()){
-                ball.drawShadow(batch);
-                ball.getSprite().draw(batch);
-                
+                ball.drawShadow(batch);                
             }
             if (ball.isMoving()) {
                 ballsMoving++;
@@ -287,24 +312,37 @@ public class Billiards extends Game {
         }
         noBallsMoving = ballsMoving == 0;
         if (noBallsMoving) {
-            
-            // if (!turnUpdated) {
+            // System.out.println(turnUpdated);
+            if (!turnUpdated) {
                 game.updateTurn(ballsPotted);
                 turnUpdated = true;
-            // }
+            }
+            
+            // stick.setVisible(true);
         }
-        
-        
-        if (cueBall.isVisible()) {
-            cueBall.drawShadow(batch);
-            cueBall.getSprite().draw(batch);
+        else {
+            turnUpdated = false;
+        }
+        batch.end();
+        modelBatch.begin(camera);
+        for (Ball ball : balls) {
+            if (ball.isVisible()) {
+                modelBatch.render(ball.getModel());
+            }
+        }
+        modelBatch.end();
+        batch.begin();
+        for (Ball ball : balls) {
+            if (ball.isVisible()) {
+                ball.getSprite().draw(batch);
+            }
         }
         batch.draw(tableMask, 450 - table.getWidth() / 2, 0);
         stick.draw(batch);
         batch.end();
         drawShape.begin(ShapeType.Line);
         drawShape.setColor(new Color(1f,0,0,0.01f));
-        if (Gdx.input.isButtonPressed(Buttons.RIGHT)) { // creating debug lines for holes and walls of pool table
+        if (Gdx.input.isButtonPressed(Buttons.RIGHT) && debugLines) { // creating debug lines for holes and walls of pool table
             // Draw Hole Debug Circle
             // drawShape.circle(150, 404, 17); // top left
             // drawShape.circle(749, 404, 17); // top right
@@ -372,6 +410,8 @@ public class Billiards extends Game {
                 h++;
             }
         }
+        // System.out.println(Gdx.graphics.getFramesPerSecond());
+
         drawShape.end();
         long currentTime = System.currentTimeMillis();
         stage.act(PHYSICS_DT);
@@ -434,6 +474,7 @@ public class Billiards extends Game {
             cueBall.setVisible(false);
             return;
         }
+        ball.setMoving(false);
         world.destroyBody(ball.getBody());
         ball.setVisible(false);
         if (ball != cueBall) {
@@ -482,6 +523,9 @@ public class Billiards extends Game {
     }
 
     public void movePoolStick(Vector2 v) {
+        if (stick == null) {
+            return;
+        }
         stick.move(v);
     }
 
@@ -528,6 +572,7 @@ public class Billiards extends Game {
         System.out.println("cue ball reset");
         cueBall.setMoveable(true);
         cueBall.move(450, 250);
+        cueBall.setVelocity(0, 0);
         cueBall.setVisible(true);
     }
 

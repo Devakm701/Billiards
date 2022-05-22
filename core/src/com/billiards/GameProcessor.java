@@ -20,6 +20,8 @@ public class GameProcessor {
         this.player1 = new Player("Player 1");
         this.player2 = new Player("Player 2");
         this.turn = player1;
+        this.solidsOut = new LinkedList<>();
+        this.stripesOut = new LinkedList<>();
         System.out.println(turn.getName());
     }
 
@@ -27,6 +29,10 @@ public class GameProcessor {
      * @param balls list of balls potted during turn
      */
     public void updateTurn(LinkedList<Ball> balls) {
+        if (numTurns == 0) {
+            numTurns++;
+            return;
+        }
         Boolean type = turn.getSolid();
         boolean switchTurns = true;
         for (Ball b : balls) {
@@ -37,7 +43,7 @@ public class GameProcessor {
             if (type == null) {
                 if (num == 8) {
                     billiardsGame.win(getOppositePlayer(turn));
-                } else if (numTurns > 1) {
+                } else if (numTurns > 2) {
                     boolean solid = num < 8 && num != 0;
                     turn.setType(solid);
                     getOppositePlayer(turn).setType(!solid);
@@ -54,6 +60,7 @@ public class GameProcessor {
                     for (Ball ball : solidsOut) {
                         solids.ballPotted(ball);
                     }
+                    System.out.println("Stripes: " + stripes.getName());
                 } else {
                     if (num > 8) {
                         stripesOut.add(b);
@@ -85,8 +92,7 @@ public class GameProcessor {
             turn = getOppositePlayer(turn);
         }
         numTurns++;
-        billiardsGame.turnUpdated = false;
-        // System.out.println(turn.getName());
+        System.out.println(turn.getName());
     }
 
     public LinkedList<Ball> getStripesOutList() {
