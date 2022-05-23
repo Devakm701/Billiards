@@ -16,6 +16,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+/**
+ * Represents the launch menu of the game
+ */
 public class LaunchMenu implements Screen {
 
     private Stage stage;
@@ -29,18 +32,21 @@ public class LaunchMenu implements Screen {
     private FreeTypeFontGenerator fontGenerator;
     private FreeTypeFontGenerator.FreeTypeFontParameter fontParam;
 
-    // https://www.youtube.com/watch?v=67ZCQt8QpNA useful tutorial to familiarize
-    // yourself with screen interface
-    // https://stackoverflow.com/questions/21488311/how-to-create-a-button-in-libgdx
-    // good idea on how to implement the buttons 
-    // good reference links xD LOL
-    // XD may 07 2022 br
+    /**
+     * Constructor that adds settings to the game and background
+     * @param game the billiard game that it is added to
+     * @param bg the background image
+     */
     public LaunchMenu(Billiards game, Texture bg) {
         super();
         billiardsGame = game;
         background = new Image(bg);
     }
 
+    /**
+     * Generates all of the styles, fonts, buttons which is added to a table.
+     * It has ChangeListeners to add functionality to buttons when pressed
+     */
     @Override
     public void show() {
         // Create stage to draw and create background 
@@ -113,32 +119,53 @@ public class LaunchMenu implements Screen {
         // table.setDebug(true); // uncomment to enable debug lines
     }
 
+    /**
+     * Called when the screen should render itself
+     * @param delta seconds since last render
+     */
     @Override
     public void render(float delta) {
         stage.act(delta);
         stage.draw();
     }
 
+    /**
+     * Unused method
+     * @param width width to resize
+     * @param height height to resize
+     */
     @Override
-    public void resize(int width, int height) {
+    public void resize(int width, int height) throws UnsupportedOperationException {
         // Unused method
     }
 
+    /**
+     * Unused method
+     */
     @Override
-    public void pause() {
+    public void pause() throws UnsupportedOperationException {
+        // Unused method
+    }
+    
+    /**
+     * Unused method
+     */
+    @Override
+    public void resume() throws UnsupportedOperationException {
         // Unused method
     }
 
+    /**
+     * Unused method
+     */
     @Override
-    public void resume() {
+    public void hide() throws UnsupportedOperationException {
         // Unused method
     }
 
-    @Override
-    public void hide() {
-        // Unused method
-    }
-
+    /**
+     * Called when this screen should release all resources.
+     */
     @Override
     public void dispose() {
         stage.dispose();

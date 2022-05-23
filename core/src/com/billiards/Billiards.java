@@ -1,5 +1,6 @@
 package com.billiards;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.Game;
@@ -8,7 +9,6 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -43,10 +43,13 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonReader;
 
 public class Billiards extends Game {
@@ -65,7 +68,7 @@ public class Billiards extends Game {
     private SpriteBatch batch;
     private LaunchMenu launchMenu;
     private SettingsMenu settingsMenu;
-    private Texture table, background, tableMask;
+    private Texture table, background, tableMask, person, arrow;
     private PoolStick stick;
     private LinkedList<Ball> balls; 
     private Ball cueBall;
@@ -85,9 +88,16 @@ public class Billiards extends Game {
     private ModelBatch modelBatch;
     private GameProcessor game;
     private BitmapFont font;
+    private boolean isOver = false;
     private  boolean debugLines = false;
+    private LinkedList<Ball> ballsPotted;
+    private HashMap<Integer, Texture> ballIcons;
+    private Label winLabel;
 
 
+    /**
+     * Circle array that represents the holes/pots that the balls can go into
+     */
     public static Circle[] holes = {
         new Circle(150, 404, 17),
         new Circle(749, 404, 17),
@@ -99,7 +109,9 @@ public class Billiards extends Game {
 
     
     
-
+    /**
+     * Creates and initializes every aspect of the game. Initializes the Launch Menu and the Settings Menus, Textures, Sprites, etc/
+     */
     @Override
     public void create () {
         // Menu Initialization
@@ -117,6 +129,8 @@ public class Billiards extends Game {
         tableMask = new Texture("TableMask.png");
         game = new GameProcessor(this);
         font = new BitmapFont();
+        arrow = new Texture("turnArrow.png");
+        person = new Texture("default.jpg");
         FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("arial.ttf")); 
         FreeTypeFontParameter fontParam = new FreeTypeFontGenerator.FreeTypeFontParameter();
         fontParam.size = 40;
@@ -129,7 +143,17 @@ public class Billiards extends Game {
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 1f, 1f, 1f, 1f));
         camera = new OrthographicCamera();
         modelBatch = new ModelBatch();
-
+        ballIcons = new HashMap<>();
+        for (int i = 1; i <= 15; i++) {
+            ballIcons.put(i, new Texture("ball_" + i + ".png"));
+        }
+        LabelStyle labelStyle = new LabelStyle(); 
+        labelStyle.background = Billiards.getDrawable("blue.png");
+        labelStyle.font = font;
+        winLabel = new Label("Game Over", labelStyle);
+        winLabel.setSize(400, 300);
+        winLabel.setPosition(WIDTH / 2 - winLabel.getWidth()/2, HEIGHT / 2 - winLabel.getHeight()/2);
+        
         // Initialize camera for 3d models
         camera = new OrthographicCamera(Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 10);
         camera.position.set(0, 0, 1);
@@ -164,9 +188,7 @@ public class Billiards extends Game {
         Body ball = world.createBody(ballDef);
         ball.createFixture(fixDef);
         G3dModelLoader modelLoader = new G3dModelLoader(new JsonReader());
-        Model cueModel = modelLoader.loadModel(Gdx.files.internal("0ball.g3dj"));
-        cueBall = new Ball(300, 250, this, "shine2.png", ball, 0, ballShadow, new ModelInstance(cueModel));
-        stick.setCueBall(cueBall);
+
         
         int num = 1;
         int h = 1;
@@ -176,20 +198,16 @@ public class Billiards extends Game {
                 Body tmpBall = world.createBody(ballDef);
                 tmpBall.createFixture(fixDef);
                 String file = "shine2.png";
-                if (num == 5)  {
-                    file = "shine2.png";
-                } else if (num % 2 == 0) {
-                    file = "shine2.png";
-                }
                 Model ballModel = modelLoader.loadModel(Gdx.files.internal(num + "ball.g3dj")); // assets/BallModels/0ball.g3dj
-
                 balls.add(new Ball(600 + i * 18, 250 + j * 20 - downShift, this, file, tmpBall, num, ballShadow, new ModelInstance(ballModel)));
                 num++;
             }
             downShift += 10;
             h++;
         }
-
+        Model cueModel = modelLoader.loadModel(Gdx.files.internal("0ball.g3dj"));
+        cueBall = new Ball(300, 250, this, "shine2.png", ball, 0, ballShadow, new ModelInstance(cueModel));
+        stick.setCueBall(cueBall);
 
         // Initialize outline
         ChainShape border = new ChainShape();
@@ -276,11 +294,15 @@ public class Billiards extends Game {
         lastTime = System.currentTimeMillis();
         setFPS(FPS);
         ballsOut = new LinkedList<>();
-        
+        ballsPotted = new LinkedList<>();
 
         balls.add(cueBall);
     }
 
+
+    /**
+     * Renders every frame of the game, updates the game info and logic at the frame rate.
+     */
     @Override
     public void render () {
         if (this.getScreen() != null) {
@@ -293,12 +315,29 @@ public class Billiards extends Game {
         world.step(PHYSICS_DT, 40, 40);
         // world.step(Math.min(Gdx.graphics.getDeltaTime(), 0.15f), 6, 2);
         batch.draw(background, 0, 0);
-        font.draw(batch, "Player 1:", 50, HEIGHT - 10);
-        font.draw(batch, "Player 2:", 700, HEIGHT - 10);
+        font.draw(batch, "Player 1:", 100, HEIGHT - 10);
+        font.draw(batch, "Player 2:", 600, HEIGHT - 10);
+
+        batch.draw(arrow, game.getTurn() == game.getPlayer1() ? 275 : 775, HEIGHT-45, 40, 40);
+        Player p1 = game.getPlayer1();
+        Player p2 = game.getPlayer2();
+        int num = 0;
+        for (int i = 1; i < 15; i++) {
+            
+        }
+        for (Ball ball : p1.getBalls()) {
+            batch.draw(ballIcons.get(ball.getNum()), 100 + num * 45, HEIGHT - 90, 35, 35);
+            num++;
+        }
+        int num2 = 0;
+        for (Ball ball : p2.getBalls()) {
+            batch.draw(ballIcons.get(ball.getNum()), 600 + num2 * 45, HEIGHT - 90, 35, 35);
+            num2++;
+        }
+
         batch.draw(table, 450 - table.getWidth() / 2, 0);
         // cueBall.update();
         int ballsMoving = 0;
-        LinkedList<Ball> ballsPotted = new LinkedList<>();
         for (Ball ball : balls) {
             if (ball.update()) {
                 removeBall(ball, ballsPotted);
@@ -315,6 +354,15 @@ public class Billiards extends Game {
             // System.out.println(turnUpdated);
             if (!turnUpdated) {
                 game.updateTurn(ballsPotted);
+                ballsPotted = new LinkedList<>();
+                Player solids = game.getSolidsPlayer();
+                if (solids != null) {
+                    System.out.println("Solids" + solids.getName() + solids.getBalls().toString());
+                }
+                Player stripes = game.getStripesPlayer();
+                if (stripes != null) {
+                    System.out.println("stripes" + stripes.getName() + stripes.getBalls().toString());
+                }
                 turnUpdated = true;
             }
             
@@ -330,7 +378,7 @@ public class Billiards extends Game {
                 modelBatch.render(ball.getModel());
             }
         }
-        modelBatch.end();
+        modelBatch.end(); 
         batch.begin();
         for (Ball ball : balls) {
             if (ball.isVisible()) {
@@ -419,21 +467,20 @@ public class Billiards extends Game {
         lastTime = currentTime;
     }
     
+    /**
+     * Sets the volume of the game
+     * @param vol the volume to set to
+     * @return the set volume
+     */
     public float setVolume(float vol) {
         volume = vol;
         return vol;
     }
     
-    @Override
-    public void dispose () {
-        batch.dispose();
-        table.dispose();
-        background.dispose();
-        stick.getTexture().dispose();
-        cueBall.getSprite().getTexture().dispose();
-        drawShape.dispose();
-    }
-
+    /**
+     * Getter method for the Sprite Batch field. The sprite batch is used to draw to the screen
+     * @return
+     */
     public SpriteBatch getBatch() {
         return batch;
     }
@@ -533,7 +580,7 @@ public class Billiards extends Game {
         
         @Override
         public void beginContact(Contact contact) {
-            float v = volume/ 25f *contact.getFixtureA().getBody().getLinearVelocity().add(contact.getFixtureB().getBody().getLinearVelocity()).dst(0,0);
+            float v = volume/ 100f *contact.getFixtureA().getBody().getLinearVelocity().add(contact.getFixtureB().getBody().getLinearVelocity()).dst(0,0);
             if (v < 0.05) {
                 return;
             }
@@ -557,8 +604,15 @@ public class Billiards extends Game {
 
     public void win(Player player) {
         System.out.println(player.getName() + " wins");
+        isOver = true;
+        stage.addActor(winLabel);
+        winLabel.setAlignment(Align.center);
+        winLabel.setText(player.getName() + " wins");
     }
 
+    public boolean isOver() {
+        return isOver;
+    }
 
     public void playPocketSound() {
         pocketSound.play(volume * 0.6f);
@@ -568,12 +622,17 @@ public class Billiards extends Game {
         world.destroyBody(body);
     }
 
+    public OrthographicCamera getCamera() {
+        return camera;
+    }
+
     public void resetCueBall() {
         System.out.println("cue ball reset");
         cueBall.setMoveable(true);
         cueBall.move(450, 250);
         cueBall.setVelocity(0, 0);
-        cueBall.setVisible(true);
+        cueBall.move(450, 250);
+        cueBall.getBody().setLinearVelocity(0, 0);
     }
 
     public void setStickVisible(boolean visibility) {

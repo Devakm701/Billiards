@@ -31,6 +31,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
+/**
+ * Represents a settings menu
+ */
 public class SettingsMenu implements Screen {
     private Preferences settings = Gdx.app.getPreferences("8 Ball Pool");
     private Billiards billiardsGame;
@@ -51,12 +54,21 @@ public class SettingsMenu implements Screen {
     private TextButton flipOn;
     private TextButton flipOff;
 
+    /**
+     * Constructor that adds settings to the game and background
+     * @param game the billiard game that it is added to
+     * @param bg the background image
+     */
     public SettingsMenu(Billiards game, Texture bg) { 
         billiardsGame = game;
         
         background = new Image(bg);
     }
 
+    /**
+     * Generates all of the styles, fonts, buttons which is added to a table.
+     * It has ChangeListeners to add functionality to buttons when pressed
+     */
     @Override
     public void show() {
         stage = new Stage();
@@ -147,38 +159,6 @@ public class SettingsMenu implements Screen {
         });
         Table presetTable = createTable2(loGraphicsButton, hiGraphicsButton);
 
-        
-
-
-        // // Volume Slider
-        // SliderStyle volumeStyle = new SliderStyle();
-        // volumeStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture("VolumeBar.png")));
-        // fxVolume = new Slider(0, 1.0f, 0.01f, false, new Skin(Gdx.files.internal("assets/ui-skins/holo/skin/dark-hdpi/Holo-dark-hdpi.json")));//volumeStyle);
-        // fxVolume.addListener(new ChangeListener() {
-        //     @Override
-        //     public void changed(ChangeEvent event, Actor actor) {
-        //         billiardsGame.setVolume(fxVolume.getVisualValue());
-        //     }
-        // });
-        // fxVolume.setPosition(200, 200);
-        // fxVolume.setWidth(400);
-        // stage.addActor(fxVolume);
-
-        // Anisotropic Filtering Drop Down
-        // do stage.add or table.add
-        // antiAliasing = new SelectBox<String>(new Skin(Gdx.files.internal("assets/ui-skins/holo/skin/dark-hdpi/Holo-dark-hdpi.json")));  
-        // antiAliasing.setItems("2x", "8x", "16x"); 
-        // antiAliasing.addListener(new ChangeListener() {
-        //     @Override
-        //     public void changed(ChangeEvent event, Actor actor) {
-        //         //Gdx.graphics.setBackBufferConfig(8,8,8,8,16,0,16); well fix this later
-        //         System.out.println(antiAliasing.getSelection());
-        //         buttonChange();
-        //     }       
-        // });
-        // stage.addActor(antiAliasing); // need to figure that out // will do that later
-        // antiAliasing.setPosition(200, 400);
-
         // Controls
         Label controlLabel = new Label("  Cue Control Style", labelStyle);
         mouseButton = new TextButton("Mouse Buttons Only", style);
@@ -260,19 +240,9 @@ public class SettingsMenu implements Screen {
                 }
             }
           });
-        // fpsField.addListener(new ChangeListener() {
-        //     @Override
-        //     public void changed(ChangeEvent event, Actor actor) {
-        //         String txt = fpsField.getText();
-        //         if (!txt.isEmpty()) {
-        //             billiardsGame.setFPS(Integer.valueOf(txt));
-        //         }
-                
-        //     }
-        // });
         
         // Music Sound
-        Label musicLabel = new Label("  Surround Sound", labelStyle);
+        Label musicLabel = new Label("  Music", labelStyle);
         soundOffButton = new TextButton("Off", style);
         soundOffButton.addListener(new ChangeListener() {
             @Override
@@ -299,20 +269,11 @@ public class SettingsMenu implements Screen {
             }
         });
         Table musicTable = createTable2(soundOffButton, soundOnButton);
-
-        // UI Clicking
-        // just make sound for every button noe true
-        // Table  no what other settings can we add // Anti Aliasing, 
-                 //can change between 2x, 8x, and 16x use drop down menu for this, I made alternate control 
-                 // scheme on pool stick so we can modify that, maybe make a separate slider for background music
-                 // LOL
         
         Table table = new Table();
         table.add(presetLabel).size(400, 50);
         table.add(presetTable);
-        table.row(); // oh no
-        //table.add(fpsLabel).size(400, 50);
-        //table.row();
+        table.row(); 
         table.add(musicLabel).size(400, 50);
         table.add(musicTable).size(400, 50).pad(2);
         table.setPosition(Billiards.WIDTH / 2 , Billiards.HEIGHT / 2); 
@@ -335,17 +296,29 @@ public class SettingsMenu implements Screen {
         initialized = true;
     }
 
+    /**
+     * Called when the screen should render itself
+     * @param delta seconds since last render
+     */
     @Override
     public void render(float delta) {
         stage.act(delta);
         stage.draw();
     }
     
+    /**
+     * Plays sound when button is clicked
+     */
     public void buttonChange() {
         billiardsGame.playButtonClick();
         stage.unfocus(fpsField);
     }
 
+    /**
+     * Helper method for tables
+     * @param left left side of button
+     * @param right right side of button
+     */
     private Table createTable2(TextButton left, TextButton right) {
         Table output = new Table();
         output.add(left).size(199, 50);
@@ -353,20 +326,35 @@ public class SettingsMenu implements Screen {
         return output;
     }
 
-
-
+    /**
+     * Unused method
+     * @param width width to resize
+     * @param height height to resize
+     */
     @Override
-    public void resize(int width, int height) {}
+    public void resize(int width, int height) throws UnsupportedOperationException {}
 
+    /**
+     * Unused method
+     */
     @Override
-    public void pause() {}
+    public void pause() throws UnsupportedOperationException {}
 
+    /**
+     * Unused method
+     */
     @Override
-    public void resume() {}
+    public void resume() throws UnsupportedOperationException {}
 
+    /**
+     * Unused method
+     */
     @Override
-    public void hide() {}
+    public void hide() throws UnsupportedOperationException {}
 
+    /**
+     * Unused method
+     */
     @Override
-    public void dispose() {}
+    public void dispose() throws UnsupportedOperationException {}
 }

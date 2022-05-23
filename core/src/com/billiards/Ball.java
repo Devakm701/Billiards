@@ -9,10 +9,12 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 
-public class Ball {
+public class Ball implements Comparable<Ball>{
     public static final float RADIUS_PX = 10f;
     public static final float SCALE = 10f;
     public static final float SCALE_INV = 1/SCALE;
@@ -33,11 +35,16 @@ public class Ball {
     private boolean soundPlayed = false;
     private boolean moveable = false;
     private boolean leftPressed = false;
+    private float lastAng = 0f;
+    private Vector3 frontDir;
+    float xRad = 0f;
+    float yRad = 0f;
 
     
 
     public Ball(float initX, float initY,Billiards billiards , String fileName, Body body, int ballNum, Sprite shadow, ModelInstance instance) { //add after balls are properly implemented
         ballShine = new Sprite(new Texture(fileName));
+        ballShine.setAlpha(0.8f);
         center = new Vector2(initX, initY);
         ballBody = body;
         body.setLinearDamping(0.99f);
@@ -48,6 +55,7 @@ public class Ball {
         move(initX, initY);
         this.ballNum = ballNum;
         this.shadow = shadow;
+        
     }
 
     public void move(float x, float y) {
@@ -55,7 +63,9 @@ public class Ball {
         // ballBody.setLinearVelocity(new Vector2(0, 0));
         ballShine.setPosition(x - RADIUS_PX, y - RADIUS_PX);
         ball3D.transform.setTranslation(mapX(x), mapY(y), 0);
-        billiardsGame.movePoolStick(new Vector2(x, y));
+        if (ballNum == 0){
+            billiardsGame.movePoolStick(new Vector2(x, y));
+        }
         center.x = x;
         center.y = y;
     }
@@ -70,13 +80,7 @@ public class Ball {
     }
 
     public boolean update() {
-        // float dst = ballBody.getLinearVelocity().dst(0, 0);
-        // //System.out.println(dst);
-        // if (dst * SCALE / 2 == 0) {//< 0.00047) { // scale was at 2
-        //     //ballBody.setLinearVelocity(0f, 0f);
-        //     isMoving = false;
-        //     return;
-        // }
+  
         if (!visible) {
             return false;
         }
@@ -85,24 +89,34 @@ public class Ball {
         isMoving = true;
         float x = ballBody.getPosition().x * SCALE;
         float y = ballBody.getPosition().y * SCALE;
-        ballShine.setPosition(x - RADIUS_PX, y - RADIUS_PX);
+
+        double ang = Math.atan2(y - center.y, x - center.x) + Math.PI / 2;
+        float dist = center.dst(x, y);
+        Vector3 axis = new Vector3((float)(Math.cos(ang)), (float)(Math.sin(ang)), 0);
+        ball3D.transform.rotate(axis, (float) Math.toDegrees(dist / RADIUS_PX));
+        ball3D.transform.setTranslation(mapX(x), mapY(y), 0);
+
+        
+        
+
+        
+        // ball3D.transform.rotate(0,0,1,(float)Math.toDegrees(ballBody.getAngle() - lastAng));
+        // lastAng = ballBody.getAngle();
         // ballShine.setRotation((float)Math.toDegrees(ballBody.getAngle()));
-        move(x, y);
+        ballShine.setPosition(x - RADIUS_PX, y - RADIUS_PX);
         center.x = x;
         center.y = y;
-
-
         if (Math.abs(vBall.x) < LIMIT && Math.abs(vBall.y) < LIMIT && Math.abs(vAngle) < LIMIT) {
             ballBody.setLinearVelocity(new Vector2(0, 0));
             ballBody.setAngularVelocity(0);
             isMoving = false;
         } else {
             // ballBody.setLinearVelocity(vBall.scl(FRICTION));
-            // ballBody.setAngularVelocity(vAngle * FRICTION);
+            ballBody.setAngularVelocity(vAngle * FRICTION);
         }
         //ballBody.setLinearVelocity(vBall.scl(FRICTION));
         //
-
+        
         // Keep in Bounds
         // if (center.x - RADIUS_PX < 0 || center.x + RADIUS_PX > Billiards.WIDTH) {
         //     ballBody.setLinearVelocity(vBall.x * -1, vBall.y);
@@ -115,18 +129,20 @@ public class Ball {
             if (hole.contains(center)) {
                 float dst = center.dst(hole.x, hole.y); 
                 // System.out.println(dst);
+                isMoving = true;
                 if (dst < LIMIT * 2) {
                     move(hole.x, hole.y);
                     this.setVelocity(0, 0);
                     isMoving = false;
+
                     if (ballNum == 0) {
-                        billiardsGame.resetCueBall();
                         soundPlayed = false;
                     }
                     return true;
                 }
                 else {
                     ballBody.setLinearVelocity(new Vector2(hole.x, hole.y).sub(center).scl(0.5f));
+                    isMoving = true;
                     if (!soundPlayed) {
                         billiardsGame.playPocketSound();
                         soundPlayed = true;
@@ -228,5 +244,13 @@ public class Ball {
 
     private float mapY(float y) {
         return y / 10f - 30f;
+    }
+
+    public String toString() {
+        return ballNum + "";
+    }
+
+    public int compareTo(Ball other) {
+        return ballNum - other.ballNum;
     }
 }

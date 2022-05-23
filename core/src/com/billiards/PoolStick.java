@@ -42,7 +42,7 @@ public class PoolStick extends Sprite {
     @Override
     public void draw(Batch batch) {
         /*---- Makes Pool Stick only visible when cue ball is not moving ----*/
-        if (!visible) {
+        if (!visible || billiards.isOver()) {
             if (billiards.noBallsMoving && !cueBall.isMoving()) {
                 setVisible(true);
                 move(cueBall.getCenter());
@@ -137,8 +137,8 @@ public class PoolStick extends Sprite {
     }
 
     private void launchCueBall(float v) {
-        v = v*v;//(float)Math.pow(v, 3); // remaps v between 0 and 1 from linear to exponential curve, gives more natural feeling shots, lower b is closer to linear
-        v *= 1000 * Ball.SCALE_INV;
+        v = v*v*v;//(float)Math.pow(v, 3); // remaps v between 0 and 1 from linear to exponential curve, gives more natural feeling shots, lower b is closer to linear
+        v *= 2000 * Ball.SCALE_INV;
         double rad = Math.toRadians(getRotation());
         billiards.playCueSound();
         cueBall.setMoveable(false);

@@ -3,6 +3,9 @@ package com.billiards;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+/**
+ * Represents the logic for an 8-Ball Pool game
+ */
 public class GameProcessor {
     private String ballType;
     private Player turn;
@@ -15,6 +18,10 @@ public class GameProcessor {
     private Player solids;
     private int numTurns;
 
+    /**
+     * Constructor that passes in the game 
+     * @param billiards main game for accessing methods 
+     */
     public GameProcessor(Billiards billiards) {
         this.billiardsGame = billiards;
         this.player1 = new Player("Player 1");
@@ -26,6 +33,7 @@ public class GameProcessor {
     }
 
     /**
+     * Main game logic for
      * @param balls list of balls potted during turn
      */
     public void updateTurn(LinkedList<Ball> balls) {
@@ -39,13 +47,14 @@ public class GameProcessor {
             int num = b.getNum();
             if (num == 0) {
                 billiardsGame.resetCueBall();
+                billiardsGame.getCueBall().setVisible(true);
             }
-            if (type == null) {
+            else if (type == null) {
                 if (num == 8) {
                     billiardsGame.win(getOppositePlayer(turn));
                 } else if (numTurns > 2) {
                     boolean solid = num < 8 && num != 0;
-                    turn.setType(solid);
+                    turn.setType(solid); //is there autoboxing
                     getOppositePlayer(turn).setType(!solid);
                     if (solid) {
                         solids = turn;
@@ -101,6 +110,26 @@ public class GameProcessor {
 
     public LinkedList<Ball> getSolidsOutList() {
         return solidsOut;
+    }
+
+    public Player getStripesPlayer() {
+        return stripes;
+    }
+
+    public Player getSolidsPlayer() {
+        return solids;
+    }
+
+    public Player getPlayer1() {
+        return player1;
+    }
+
+    public Player getPlayer2() {
+        return player2;
+    }
+
+    public Player getTurn() {
+        return turn;
     }
 
     public Player getOppositePlayer(Player turn) {

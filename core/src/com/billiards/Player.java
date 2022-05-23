@@ -1,5 +1,6 @@
 package com.billiards;
 
+import java.util.Collections;
 import java.util.LinkedList;
 
 public class Player {
@@ -22,14 +23,22 @@ public class Player {
     }
 
     public void ballPotted(Ball b) {
+        if (ballsPotted.contains(b)) {
+            return;
+        }
         ballsPotted.add(b);
         if (ballsPotted.size() == 7) {
             eightBallAvailable = true;
         }
+        Collections.sort(ballsPotted);
     }
 
     public boolean is8BallAvailable() {
         return eightBallAvailable;
+    }
+
+    public LinkedList<Ball> getBalls() {
+        return ballsPotted;
     }
 
     public String getName() {
