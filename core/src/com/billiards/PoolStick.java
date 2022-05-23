@@ -127,6 +127,14 @@ public class PoolStick extends Sprite {
     }
 
     /**
+     * Setter for distance
+     * @param dist value to set distance to 
+     */
+    public void setChargeDist(float dist) {
+        chargeDist = dist;
+    }
+
+    /**
      * Helper method for draw, draws a pool stick while its charged
      * @param dist distance away from default position
      * @param batch sprite batch to draw it on

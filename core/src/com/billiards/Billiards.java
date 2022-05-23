@@ -323,7 +323,9 @@ public class Billiards extends Game {
         font.draw(batch, "Player 1:", 100, HEIGHT - 10);
         font.draw(batch, "Player 2:", 600, HEIGHT - 10);
 
-        batch.draw(arrow, game.getTurn() == game.getPlayer1() ? 275 : 775, HEIGHT-45, 40, 40);
+        if (!isOver) {
+            batch.draw(arrow, game.getTurn() == game.getPlayer1() ? 275 : 775, HEIGHT-45, 40, 40);
+        }
         Player p1 = game.getPlayer1();
         Player p2 = game.getPlayer2();
         int num = 0;
@@ -331,12 +333,12 @@ public class Billiards extends Game {
             
         }
         for (Ball ball : p1.getBalls()) {
-            batch.draw(ballIcons.get(ball.getNum()), 100 + num * 45, HEIGHT - 90, 35, 35);
+            batch.draw(ballIcons.get(ball.getNum()), 100 + num * 38, HEIGHT - 80, 32, 32);
             num++;
         }
         int num2 = 0;
         for (Ball ball : p2.getBalls()) {
-            batch.draw(ballIcons.get(ball.getNum()), 600 + num2 * 45, HEIGHT - 90, 35, 35);
+            batch.draw(ballIcons.get(ball.getNum()), 600 + num2 * 38, HEIGHT - 80, 32, 32);
             num2++;
         }
 
@@ -466,6 +468,8 @@ public class Billiards extends Game {
         // System.out.println(Gdx.graphics.getFramesPerSecond());
 
         drawShape.end();
+        drawShape.begin(ShapeType.Filled);
+        drawShape.end();
         long currentTime = System.currentTimeMillis();
         stage.act(PHYSICS_DT);
         stage.draw();
@@ -546,6 +550,8 @@ public class Billiards extends Game {
         ballsPotted.add(ball);
         if (ball.getNum() == 0) {
             cueBall.setVisible(false);
+            cueBall.move(-40, -40);
+            cueBall.setVelocity(0, 0);
             return;
         }
         ball.setMoving(false);
@@ -732,6 +738,14 @@ public class Billiards extends Game {
         cueBall.setVelocity(0, 0);
         cueBall.move(450, 250);
         cueBall.getBody().setLinearVelocity(0, 0);
+    }
+
+    /**
+     * getter for the pool cue object
+     * @return The pool cue object used by the billiards class 
+     */
+    public PoolStick getStick() {
+        return stick;
     }
 
     /**

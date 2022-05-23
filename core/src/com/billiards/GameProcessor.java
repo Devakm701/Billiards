@@ -51,15 +51,17 @@ public class GameProcessor {
             else if (type == null) {
                 if (num == 8) {
                     billiardsGame.win(getOppositePlayer(turn));
-                } else if (numTurns > 2) {
+                } else if (numTurns > 1) {
                     boolean solid = num < 8 && num != 0;
                     turn.setType(solid); //is there autoboxing
                     getOppositePlayer(turn).setType(!solid);
                     if (solid) {
                         solids = turn;
+                        solids.ballPotted(b);
                         stripes = getOppositePlayer(turn);
                     } else {
                         stripes = turn;
+                        stripes.ballPotted(b);
                         solids = getOppositePlayer(turn);
                     }
                     for (Ball ball : stripesOut) {
@@ -68,26 +70,34 @@ public class GameProcessor {
                     for (Ball ball : solidsOut) {
                         solids.ballPotted(ball);
                     }
+                    if (balls.size() > 0) {
+                        switchTurns = false; 
+                    }
                     System.out.println("Stripes: " + stripes.getName());
                 } else {
                     if (num > 8) {
                         stripesOut.add(b);
-                        if (turn == stripes) {
-                            switchTurns = false;
-                        }
-                    } else {
+                        switchTurns = false;
+                        
+                    } else if (num != 0 && num < 8){
                         solidsOut.add(b);
-                        if (turn == solids) {
-                            switchTurns = false;
-                        }
+                        switchTurns = false;
+                        
                     }
                 }
             } else if (num != 8 && num != 0) {
                 if (num > 8) {
                     stripes.ballPotted(b);
+                    if (turn == stripes) {
+                        switchTurns = false;
+                    }
                 } else {
                     solids.ballPotted(b);
+                    if (turn == solids) {
+                        switchTurns = false;
+                    }
                 }
+                // switchTurns = false;
             } else if (num == 8) {
                 if (turn.is8BallAvailable()) {
                     billiardsGame.win(turn);
@@ -95,6 +105,14 @@ public class GameProcessor {
                     billiardsGame.win(getOppositePlayer(turn));
                 }
             }
+        }
+        if (balls.contains(billiardsGame.getCueBall())) {
+            for (Ball ball : balls) {
+                if (ball.getNum() ==8) {
+                    billiardsGame.win(getOppositePlayer(turn));
+                }
+            }
+            switchTurns = true;
         }
         if (switchTurns) {
             turn = getOppositePlayer(turn);

@@ -166,12 +166,14 @@ public class Ball implements Comparable<Ball>{
                 int mouseX = Gdx.input.getX();
                 int mouseY = Gdx.input.getY();
                 
-                if (mouseX < 158 + RADIUS_PX &&  mouseX > 741 - RADIUS_PX &&
-                    mouseY < 104 + RADIUS_PX && mouseY > 396 - RADIUS_PX) {
-                    return false;        
-                }
+                boolean outOfBounds = mouseX < 158 + RADIUS_PX ||  mouseX > 741 - RADIUS_PX ||
+                    Billiards.HEIGHT - mouseY < 104 + RADIUS_PX || Billiards.HEIGHT - mouseY > 396 - RADIUS_PX;
+
 
                 for (Ball b : billiardsGame.getBallList()) {
+                    if (b.getNum() == 0) {
+                        continue;
+                    }
                     Vector2 bCenter = b.getCenter();
                     float dx = bCenter.x - mouseX;
                     float dy = bCenter.y - (Billiards.HEIGHT - mouseY);
@@ -179,7 +181,8 @@ public class Ball implements Comparable<Ball>{
                         return false;
                     }
                 }
-                if (this.getCircle().contains(mouseX,Billiards.HEIGHT - mouseY) || leftPressed) {
+                if ((this.getCircle().contains(mouseX,Billiards.HEIGHT - mouseY) || leftPressed) && !outOfBounds) {
+                    billiardsGame.getStick().setChargeDist(0f);
                     move(mouseX, Billiards.HEIGHT - mouseY);
                     billiardsGame.setStickVisible(false);
                     leftPressed = true;
@@ -241,6 +244,9 @@ public class Ball implements Comparable<Ball>{
         visible = visibility;
     }
 
+    /**
+     * Returns if ball is visible
+     */
     public boolean isVisible(){
         return visible;
     }
@@ -253,6 +259,9 @@ public class Ball implements Comparable<Ball>{
         this.moveable = moveable;
     }
 
+    /**
+     * Getter method for the ball number
+     */
     public int getNum() {
         return ballNum;
     }
