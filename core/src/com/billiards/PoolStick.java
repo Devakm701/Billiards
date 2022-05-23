@@ -9,6 +9,12 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
+/**
+ * Represents the pool stick that is used to strike the cueball. 
+ * It can spin by following the cursor. 
+ * Holding left click will charge the ball which changes striking strength.
+ * @author Devak M
+ */
 public class PoolStick extends Sprite {
     
     public final float HEIGHT;
@@ -24,7 +30,12 @@ public class PoolStick extends Sprite {
     private boolean visible = true;
     private Billiards billiards;
     
-
+    /**
+     * Three param constructor that uses anti-aliasing to smooth pool stick. Sets the position of the pool stick to follow the ball. 
+     * @param texture pool stick design
+     * @param origin position of pool stick
+     * @param game main game for accessing methods
+     */
     public PoolStick(Texture texture, Vector2 origin, Billiards game) {
         super(texture);
         texture.setFilter(TextureFilter.Linear, TextureFilter.Linear); // Rendering trick that smooths sharp pixelated edges
@@ -35,10 +46,18 @@ public class PoolStick extends Sprite {
         billiards = game;
     }
 
+    /**
+     * Two param constructor that moves the pool stick according to the ball.
+     * @param texture pool stick design
+     * @param game main game for accessing methods
+     */
     public PoolStick(Texture texture, float x, float y, Billiards game) {
         this(texture, new Vector2(x, y), game);
     }
 
+    /**
+     * Overrides the draw method from the sprite and modifies it to draw the pool cue at the desired position
+     */
     @Override
     public void draw(Batch batch) {
         /*---- Makes Pool Stick only visible when cue ball is not moving ----*/
@@ -107,6 +126,11 @@ public class PoolStick extends Sprite {
         }
     }
 
+    /**
+     * Helper method for draw, draws a pool stick while its charged
+     * @param dist distance away from default position
+     * @param batch sprite batch to draw it on
+     */
     private void drawCharged(float dist, Batch batch) {
         chargeDist = dist;
         chargeDist = Math.min(Math.max(chargeDist, 0), MAX_CHARGE );
@@ -116,14 +140,26 @@ public class PoolStick extends Sprite {
         super.draw(batch);
     }
 
+    /**
+     * Updates the visibility of the pool cue.
+     * @param visibility set to true to show, false to hide
+     */
     public void setVisible(boolean visibility) {
         visible = visibility;
     }
 
+    /**
+     * Getter for whether or not the pool cue is visible
+     * @return pool cue visibility
+     */
     public boolean isVisible() {
         return visible;
     }
 
+    /**
+     * Moves the pool cue to the desired location
+     * @param v the location to move the pool cue to as a vector
+     */
     public void move(Vector2 v) {
         origin.x = v.x;
         origin.y = v.y;
@@ -131,11 +167,19 @@ public class PoolStick extends Sprite {
         super.setPosition(origin.x - chargeDist - getWidth() - Ball.RADIUS_PX, origin.y - HEIGHT / 2);
     }
 
+    /**
+     * Initializes the cue ball of the pool cue. Used for launching the cue ball
+     * @param ball
+     */
     public void setCueBall(Ball ball) {
         cueBall = ball;
         move(cueBall.getCenter());
     }
 
+    /**
+     * Launches in the direction of the pool cue at the given magnitude
+     * @param v magnitude of launch
+     */
     private void launchCueBall(float v) {
         v = v*v*v;//(float)Math.pow(v, 3); // remaps v between 0 and 1 from linear to exponential curve, gives more natural feeling shots, lower b is closer to linear
         v *= 2000 * Ball.SCALE_INV;

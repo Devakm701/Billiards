@@ -1,7 +1,6 @@
 package com.billiards;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -16,10 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox.SelectBoxStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -35,7 +30,6 @@ import com.badlogic.gdx.utils.Align;
  * Represents a settings menu
  */
 public class SettingsMenu implements Screen {
-    private Preferences settings = Gdx.app.getPreferences("8 Ball Pool");
     private Billiards billiardsGame;
     private Stage stage;
     private Image background;
@@ -43,8 +37,6 @@ public class SettingsMenu implements Screen {
     private TextButton hiGraphicsButton;
     private TextButton loGraphicsButton;
     private Button exitButton;
-    private Slider fxVolume;
-    private SelectBox<String> antiAliasing;
     private TextField fpsField;
     private TextButton soundOffButton;
     private TextButton soundOnButton;
@@ -56,7 +48,7 @@ public class SettingsMenu implements Screen {
 
     /**
      * Constructor that adds settings to the game and background
-     * @param game the billiard game that it is added to
+     * @param game main game for accessing methods
      * @param bg the background image
      */
     public SettingsMenu(Billiards game, Texture bg) { 

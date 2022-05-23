@@ -1,13 +1,12 @@
 package com.billiards;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
- * Represents the logic for an 8-Ball Pool game
+ * Represents the game rules logic for an 8-Ball Pool game
  */
 public class GameProcessor {
-    private String ballType;
+
     private Player turn;
     private Player player1;
     private Player player2;
@@ -33,7 +32,7 @@ public class GameProcessor {
     }
 
     /**
-     * Main game logic for
+     * Main game logic for 8-Ball Pool game and adds balls to their respective lists if potted
      * @param balls list of balls potted during turn
      */
     public void updateTurn(LinkedList<Ball> balls) {
@@ -104,34 +103,59 @@ public class GameProcessor {
         System.out.println(turn.getName());
     }
 
+    /**
+     * returns list of striped balls that are out
+     */
     public LinkedList<Ball> getStripesOutList() {
         return stripesOut;
     }
 
+    /**
+     * returns list of solid balls that are out
+     * does not include 8 ball or cue ball
+     */
     public LinkedList<Ball> getSolidsOutList() {
         return solidsOut;
     }
 
+    /**
+     * returns player that is assigned to stripes
+     */
     public Player getStripesPlayer() {
         return stripes;
     }
 
+    /**
+     * returns player that is assigned to solids
+     */
     public Player getSolidsPlayer() {
         return solids;
     }
 
+    /**
+     * returns player 1
+     */
     public Player getPlayer1() {
         return player1;
     }
 
+    /**
+     * returns player 2
+     */
     public Player getPlayer2() {
         return player2;
     }
 
+    /**
+     * returns which the player whose turn it is
+     */
     public Player getTurn() {
         return turn;
     }
 
+    /**
+     * helper method for game logic for turn, win, and assignment
+     */
     public Player getOppositePlayer(Player turn) {
         if (turn == player1) {
             return player2;

@@ -14,6 +14,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 
+/**
+ * Represents a ball
+ * 
+ */
 public class Ball implements Comparable<Ball>{
     public static final float RADIUS_PX = 10f;
     public static final float SCALE = 10f;
@@ -79,6 +83,10 @@ public class Ball implements Comparable<Ball>{
         return ballCircle;
     }
 
+    /**
+     * Updates the position of the ball, handles friction, interacts with the Box2D body, updates the 3D model, and allows the cue ball to be moveable
+     * @return whether or not to remove the ball from the table
+     */
     public boolean update() {
   
         if (!visible) {
@@ -188,6 +196,11 @@ public class Ball implements Comparable<Ball>{
         return false;
     }
     
+
+    /**
+     * Draws the shadow underneath the ball
+     * @param batch batch to draw the shadow on
+     */
     public void drawShadow(Batch batch) {
         
         Vector2 fromCenter = new Vector2(center.x - Billiards.TABLE_CENTER.x, center.y - Billiards.TABLE_CENTER.y);
@@ -197,19 +210,33 @@ public class Ball implements Comparable<Ball>{
         shadow.draw(batch);
     }
 
+    /**
+     * Sets the velocity of the box2D body
+     * @param vX x component of velocity
+     * @param vY y component of velocity
+     */
     public void setVelocity(float vX, float vY) {
         ballBody.setLinearVelocity(new Vector2(vX, vY));
         // System.out.println("x: " + vX + " y: " + vY);
     }
 
+    /**
+     * Getter method for whether or not the ball is moving
+     * @return true if the ball is moving otherwise false
+     */
     public boolean isMoving() {
         return isMoving;
     }
 
+    /**
+     * Gets the location of the center of the ball
+     * @return the center of the ball as a vector2 object
+     */
     public Vector2 getCenter() {
         return center;
     }
 
+    
     public void setVisible(boolean visibility) {
         visible = visibility;
     }

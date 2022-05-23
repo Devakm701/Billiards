@@ -52,6 +52,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonReader;
 
+
+/**
+ * Top Level class that manages the program
+ * @author Devak M
+ */
 public class Billiards extends Game {
     public static final int WIDTH = 900;
     public static final int HEIGHT = 600;
@@ -485,11 +490,17 @@ public class Billiards extends Game {
         return batch;
     }
 
+    /**
+     * Opens the Settings UI
+     */
     public void openSettings() {
         lastScreen = this.getScreen();
         this.setScreen(settingsMenu);
     }
 
+    /**
+     * Opens the Launch Menu
+     */
     public void openLaunchMenu() {
         lastScreen = this.getScreen();
         this.setScreen(launchMenu);
@@ -499,22 +510,38 @@ public class Billiards extends Game {
         return (Drawable)(new TextureRegionDrawable(new TextureRegion(new Texture(fileName))));
     }
 
+    /**
+     * Goes back to the previous screen
+     */
     public void lastScreen() {
         Screen tmp = this.getScreen();
         this.setScreen(lastScreen);
         lastScreen = tmp;
     }
 
+    /**
+     * Update the max frame rate of the game
+     * @param fps max frame
+     */
     public void setFPS(int fps) {
         FPS = fps;
         Gdx.graphics.setForegroundFPS(fps);
         // physicsDelta = 1f / FPS;
     }
 
+    /**
+     * Getter for max frame rate
+     * @return max frame of the game
+     */
     public int getFPS() {
         return FPS;
     }
 
+    /**
+     * removes the given ball from the game
+     * @param ball ball to remove
+     * @param ballsPotted list to add the ball to
+     */
     public void removeBall(Ball ball, LinkedList<Ball> ballsPotted) {
         ballsPotted.add(ball);
         if (ball.getNum() == 0) {
@@ -530,45 +557,80 @@ public class Billiards extends Game {
         
     }
 
+    /**
+     * Clears all screens and opens the game
+     */
     public void closeMenu() {
         lastScreen = this.getScreen();
         this.setScreen(null);
         Gdx.input.setInputProcessor(stage);
     }
 
+    /**
+     * Plays the sound of the cue hitting the ball
+     */
     public void playCueSound() {
         cueSound.play(volume);
     } // is there sound
 
+    /**
+     * Starts playing Akashs Music Genesis project
+     */
     public void playAkashSound() {
         akashProject.setLooping(true);
         akashProject.play();
     }
 
+    /**
+     * Stops playing Akashs Music Genesis Project
+     */
     public void stopAkashSound() {
         akashProject.stop();
     }
 
+    /**
+     * getter for Akashs Music Genesis project
+     * @return Akashs Music Genesis project as a music object
+     */
     public Music getAkash() {
         return akashProject;
     }
 
+    /**
+     * Plays the button click sound
+     */
     public void playButtonClick() {
         buttonClickSound.play(volume);
     }
 
+    /**
+     * Getter for the cue ball
+     * @return the cue ball
+     */
     public Ball getCueBall() {
         return cueBall;
     }
 
+    /**
+     * getter for all of the balls in play
+     * @return a LinkedList of all of the balls in play
+     */
     public LinkedList<Ball> getBallList() {
         return balls;
     }
 
+    /**
+     * Getter for the Pool stick/cue's texture
+     * @return
+     */
     public Texture getStickTexture() {
         return stick.getTexture();
     }
 
+    /**
+     * updates the position of the pool cue
+     * @param v
+     */
     public void movePoolStick(Vector2 v) {
         if (stick == null) {
             return;
@@ -576,8 +638,13 @@ public class Billiards extends Game {
         stick.move(v);
     }
 
+    /**
+     * Private class for playing sounds upon collision
+     */
     private class CollisionListener implements ContactListener {
-        
+        /**
+         * Plays sounds upon collision
+         */
         @Override
         public void beginContact(Contact contact) {
             float v = volume/ 100f *contact.getFixtureA().getBody().getLinearVelocity().add(contact.getFixtureB().getBody().getLinearVelocity()).dst(0,0);
@@ -591,17 +658,30 @@ public class Billiards extends Game {
             }
         }
 
+        /**
+         * Unused method required for interface
+         */
         @Override
         public void endContact(Contact contact) {}
 
+        /**
+         * Unused method required for interface
+         */
         @Override
         public void preSolve(Contact contact, Manifold oldManifold) {}
 
+        /**
+         * Unused method required for interface
+         */
         @Override
         public void postSolve(Contact contact, ContactImpulse impulse) {}
 
     }
 
+    /**
+     * Called when the game ends, handles winning
+     * @param player player that won
+     */
     public void win(Player player) {
         System.out.println(player.getName() + " wins");
         isOver = true;
@@ -610,22 +690,41 @@ public class Billiards extends Game {
         winLabel.setText(player.getName() + " wins");
     }
 
+    /**
+     * Method to check if the game is still going
+     * @return a boolean which represents whether or not the game is over
+     */
     public boolean isOver() {
         return isOver;
     }
 
+    /**
+     * Plays the sound for when a ball goes into a pocket
+     */
     public void playPocketSound() {
         pocketSound.play(volume * 0.6f);
     }
 
+
+    /**
+     * removes a Box2D body from the game world
+     * @param body
+     */
     public void destroyBody(Body body) {
         world.destroyBody(body);
     }
 
+    /**
+     * Accessor method for the camera used to view the 3d models
+     * @return Orthographic camera used for viewing the 3d models
+     */
     public OrthographicCamera getCamera() {
         return camera;
     }
 
+    /**
+     * Resets the cue ball to the center of the board
+     */
     public void resetCueBall() {
         System.out.println("cue ball reset");
         cueBall.setMoveable(true);
@@ -635,6 +734,10 @@ public class Billiards extends Game {
         cueBall.getBody().setLinearVelocity(0, 0);
     }
 
+    /**
+     * Sets the visibility of the Pool Cue
+     * @param visibility true for visible and false for hidden
+     */
     public void setStickVisible(boolean visibility) {
         stick.setVisible(visibility);
     }

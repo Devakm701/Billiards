@@ -34,7 +34,7 @@ public class LaunchMenu implements Screen {
 
     /**
      * Constructor that adds settings to the game and background
-     * @param game the billiard game that it is added to
+     * @param game main game for accessing methods
      * @param bg the background image
      */
     public LaunchMenu(Billiards game, Texture bg) {
