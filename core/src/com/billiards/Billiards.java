@@ -64,18 +64,36 @@ import com.badlogic.gdx.utils.JsonReader;
  * 
  */
 public class Billiards extends Game {
+    /**
+     * Width of the window
+     */
     public static final int WIDTH = 900;
+    /**
+     * Height of the window
+     */
     public static final int HEIGHT = 600;
-    public static final float PHYSICS_DT = 1/144f;
+    /**
+     * Center of the table as a Vector2 object
+     */
     public static final Vector2 TABLE_CENTER = new Vector2(450,250);
+    /**
+     * Game setting for whether use hover or click to control cue
+     */
     public static boolean altControl = true;
+    /**
+     * Game setting for whether the pool cue should on the mouse or 180deg away
+     */
     public static boolean stickFlip = true;
     private float volume = 1f;
     private int FPS = 144;
     private long lastTime;
-    public static boolean turnUpdated = false;
+    private static boolean turnUpdated = false;
+    /**
+     * Boolean that holds whether balls are moving
+     */
     public boolean noBallsMoving = true;
     private static ShapeRenderer drawShape;
+    private static final float PHYSICS_DT = 1/144f;
     private SpriteBatch batch;
     private LaunchMenu launchMenu;
     private SettingsMenu settingsMenu;
@@ -562,7 +580,7 @@ public class Billiards extends Game {
     
     /**
      * Getter method for the Sprite Batch field. The sprite batch is used to draw to the screen
-     * @return
+     * @return the sprite batch for drawing to the window
      */
     public SpriteBatch getBatch() {
         return batch;
@@ -706,7 +724,7 @@ public class Billiards extends Game {
 
     /**
      * Getter for the Pool stick/cue's texture
-     * @return
+     * @return returns the texture of the pool stick
      */
     public Texture getStickTexture() {
         return stick.getTexture();
@@ -714,7 +732,7 @@ public class Billiards extends Game {
 
     /**
      * updates the position of the pool cue
-     * @param v
+     * @param v location to move pool cue to as a vector2 object
      */
     public void movePoolStick(Vector2 v) {
         if (stick == null) {
@@ -793,7 +811,7 @@ public class Billiards extends Game {
 
     /**
      * removes a Box2D body from the game world
-     * @param body
+     * @param body the box2D body that you want removed from the world
      */
     public void destroyBody(Body body) {
         world.destroyBody(body);

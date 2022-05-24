@@ -19,9 +19,21 @@ import com.badlogic.gdx.physics.box2d.Body;
  * @version 2022 May 23
  */
 public class Ball implements Comparable<Ball>{
+    /**
+     * The ball's radius in pixels
+     */
     public static final float RADIUS_PX = 10f;
+    /**
+     * The scale factor for the box2D balls
+     */
     public static final float SCALE = 10f;
+    /**
+     * The reciprocal of the scale 
+     */
     public static final float SCALE_INV = 1/SCALE;
+    /**
+     * The radius of the ball in meters (Only for box2D world)
+     */
     public static final float RADIUS_M = RADIUS_PX * SCALE_INV;
     private static final float FRICTION = 0.995f;
     private static final float LIMIT = 0.25f;

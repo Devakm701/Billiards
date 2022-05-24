@@ -17,8 +17,13 @@ import com.badlogic.gdx.math.Vector2;
  * @version 5/23/22
  */
 public class PoolStick extends Sprite {
-    
+    /**
+     * Height of the pool cue texture
+     */
     public final float HEIGHT;
+    /**
+     * Width of the pool cue texture
+     */
     public final float WIDTH;
     private final float MAX_CHARGE = 75f;
     private final Input in = Gdx.input;
@@ -51,6 +56,8 @@ public class PoolStick extends Sprite {
      * Two param constructor that moves the pool stick according to the ball.
      * @param texture pool stick design
      * @param game main game for accessing methods
+     * @param x x coord to initialize pool stick
+     * @param y y coord to initialize pool stick
      */
     public PoolStick(Texture texture, float x, float y, Billiards game) {
         this(texture, new Vector2(x, y), game);
@@ -178,7 +185,7 @@ public class PoolStick extends Sprite {
 
     /**
      * Initializes the cue ball of the pool cue. Used for launching the cue ball
-     * @param ball
+     * @param ball the ball to be set as the cue ball
      */
     public void setCueBall(Ball ball) {
         cueBall = ball;

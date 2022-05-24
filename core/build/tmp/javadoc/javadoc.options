@@ -1,0 +1,13 @@
+-classpath 'C:\\Users\\devak\\Documents\\.Local APCS Workspace\\Billiards\\core\\build\\classes\\java\\main;C:\\Users\\devak\\Documents\\.Local APCS Workspace\\Billiards\\core\\build\\resources\\main;C:\\Users\\devak\\.gradle\\caches\\modules-2\\files-2.1\\com.badlogicgames.box2dlights\\box2dlights\\1.5\\6902dbcd250c95a27973aa24a147a95b3828d348\\box2dlights-1.5.jar;C:\\Users\\devak\\.gradle\\caches\\modules-2\\files-2.1\\com.badlogicgames.gdx\\gdx-box2d\\1.10.0\\b3a3c0f00b90716238835434d0ae8985604c37f8\\gdx-box2d-1.10.0.jar;C:\\Users\\devak\\.gradle\\caches\\modules-2\\files-2.1\\com.badlogicgames.gdx\\gdx-freetype\\1.10.0\\de1d0d5c1e92e8d91364256fd6b7bb279d3e9859\\gdx-freetype-1.10.0.jar;C:\\Users\\devak\\.gradle\\caches\\modules-2\\files-2.1\\com.badlogicgames.gdx\\gdx\\1.10.0\\74c240f79dc4fb6b766a834249600d0a019d0489\\gdx-1.10.0.jar;C:\\Users\\devak\\.gradle\\caches\\modules-2\\files-2.1\\com.badlogicgames.gdx-controllers\\gdx-controllers-core\\2.2.1\\8aca0dc002a8daf6a6d28f49c44e25189dd93fd7\\gdx-controllers-core-2.2.1.jar'
+-d 'C:\\Users\\devak\\Documents\\.Local APCS Workspace\\Billiards\\core\\build\\docs\\javadoc'
+-doctitle 'core 1.0 API'
+-notimestamp 
+-quiet 
+-windowtitle 'core 1.0 API'
+'C:\\Users\\devak\\Documents\\.Local APCS Workspace\\Billiards\\core\\src\\com\\billiards\\Ball.java'
+'C:\\Users\\devak\\Documents\\.Local APCS Workspace\\Billiards\\core\\src\\com\\billiards\\Billiards.java'
+'C:\\Users\\devak\\Documents\\.Local APCS Workspace\\Billiards\\core\\src\\com\\billiards\\GameProcessor.java'
+'C:\\Users\\devak\\Documents\\.Local APCS Workspace\\Billiards\\core\\src\\com\\billiards\\LaunchMenu.java'
+'C:\\Users\\devak\\Documents\\.Local APCS Workspace\\Billiards\\core\\src\\com\\billiards\\Player.java'
+'C:\\Users\\devak\\Documents\\.Local APCS Workspace\\Billiards\\core\\src\\com\\billiards\\PoolStick.java'
+'C:\\Users\\devak\\Documents\\.Local APCS Workspace\\Billiards\\core\\src\\com\\billiards\\SettingsMenu.java'
