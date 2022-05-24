@@ -10,7 +10,7 @@ import com.billiards.*;
 /**
  * Launcher class that comes with Libgdx
  * @author none
- * @version 05/23/22
+ * @version 2022 May 23
  */
 public class DesktopLauncher {
     public static void main (String[] arg) {

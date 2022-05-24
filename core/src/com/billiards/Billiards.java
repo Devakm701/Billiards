@@ -59,7 +59,8 @@ import com.badlogic.gdx.utils.JsonReader;
  * the game and updates the physics world. It opens a new screen when necessary and can play specific sounds.
  * Serves as a bridge for all of the other classes. Extends the application adapter class for the library.
  * @author Devak M
- * @version 5/23/22
+ * @author Collaborators: Roy Y, Jeffrey L
+ * @version 2022 May 23
  * 
  */
 public class Billiards extends Game {
@@ -371,14 +372,14 @@ public class Billiards extends Game {
             if (!turnUpdated) {
                 game.updateTurn(ballsPotted);
                 ballsPotted = new LinkedList<>();
-                Player solids = game.getSolidsPlayer();
-                if (solids != null) {
-                    System.out.println("Solids" + solids.getName() + solids.getBalls().toString());
-                }
-                Player stripes = game.getStripesPlayer();
-                if (stripes != null) {
-                    System.out.println("stripes" + stripes.getName() + stripes.getBalls().toString());
-                }
+                // Player solids = game.getSolidsPlayer(); // Debug code
+                // if (solids != null) {
+                //     System.out.println("Solids" + solids.getName() + solids.getBalls().toString());
+                // }
+                // Player stripes = game.getStripesPlayer();
+                // if (stripes != null) {
+                //     System.out.println("stripes" + stripes.getName() + stripes.getBalls().toString());
+                // }
                 turnUpdated = true;
             }
             
@@ -758,7 +759,7 @@ public class Billiards extends Game {
      * @param player player that won
      */
     public void win(Player player) {
-        System.out.println(player.getName() + " wins");
+        // System.out.println(player.getName() + " wins");
         isOver = true;
         stage.addActor(winLabel);
         winLabel.setAlignment(Align.center);
@@ -801,7 +802,7 @@ public class Billiards extends Game {
      * Resets the cue ball to the center of the board
      */
     public void resetCueBall() {
-        System.out.println("cue ball reset");
+        // System.out.println("cue ball reset");
         cueBall.setMoveable(true);
         cueBall.move(450, 250);
         cueBall.setVelocity(0, 0);

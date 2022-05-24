@@ -16,7 +16,7 @@ import com.badlogic.gdx.physics.box2d.Body;
  * screen. Holds the body for the physics engine .Location and 
  * velocity can be updated. Can be moved using cursor or method.
  * @author Devak M
- * @version 5/23/22
+ * @version 2022 May 23
  */
 public class Ball implements Comparable<Ball>{
     public static final float RADIUS_PX = 10f;

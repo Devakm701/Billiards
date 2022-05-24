@@ -27,7 +27,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
 /**
- * Represents a settings menu
+ * Represents a settings menu, allows you to change various settings 
+ * from fps, to control settings, music and can play Akashs music 
+ * genesis project by clicking "Surround Sound"
+ * @author Roy Y
  * @version 2022 May 23
  */
 public class SettingsMenu implements Screen {

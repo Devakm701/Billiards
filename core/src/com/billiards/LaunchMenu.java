@@ -17,7 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
- * Represents the launch menu of the game
+ * Represents the launch menu of the game. Prompts the user with play game, settings menu, and exit game options
+ * @author Roy Y
  * @version 2022 May 23
  */
 public class LaunchMenu implements Screen {

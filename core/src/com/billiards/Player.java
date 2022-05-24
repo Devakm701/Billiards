@@ -4,7 +4,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Represents the score, assigned ball, and data for a player
+ * Represents a player, holds the necessary data for a single player.
+ * @author Jeffrey L
  * @version 2022 May 23
  */
 public class Player {

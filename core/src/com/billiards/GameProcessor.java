@@ -4,6 +4,8 @@ import java.util.LinkedList;
 
 /**
  * Represents the game rules logic for an 8-Ball Pool game
+ * @author Jeffrey L
+ * @author Collaborators: Devak M, Roy Y
  * @version 2022 May 23
  */
 public class GameProcessor {
@@ -29,7 +31,7 @@ public class GameProcessor {
         this.turn = player1;
         this.solidsOut = new LinkedList<>();
         this.stripesOut = new LinkedList<>();
-        System.out.println(turn.getName());
+        // System.out.println(turn.getName());
     }
 
     /**
@@ -74,7 +76,7 @@ public class GameProcessor {
                     if (balls.size() > 0) {
                         switchTurns = false; 
                     }
-                    System.out.println("Stripes: " + stripes.getName());
+                    // System.out.println("Stripes: " + stripes.getName());
                 } else {
                     if (num > 8) {
                         stripesOut.add(b);
@@ -119,7 +121,7 @@ public class GameProcessor {
             turn = getOppositePlayer(turn);
         }
         numTurns++;
-        System.out.println(turn.getName());
+        // System.out.println(turn.getName());
     }
 
     /**
