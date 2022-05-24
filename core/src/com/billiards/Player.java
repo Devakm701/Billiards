@@ -31,6 +31,7 @@ public class Player {
 
     /**
      * Returns true if is assigned solids. Returns false if is assigned stripes.
+     * @return the type as a boolean object, can be null, true or false
      */
     public Boolean getSolid() {
         return solids;

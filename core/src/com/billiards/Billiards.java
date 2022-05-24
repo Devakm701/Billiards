@@ -54,7 +54,10 @@ import com.badlogic.gdx.utils.JsonReader;
 
 
 /**
- * Top Level class that manages the program
+ * This class is the Backbone of the entire application. It is a hybrid GUI and manager class. 
+ * It instantiates the necessary amount of all the other classes. It holds the loop that renders
+ * the game and updates the physics world. It opens a new screen when necessary and can play specific sounds.
+ * Serves as a bridge for all of the other classes. Extends the application adapter class for the library.
  * @author Devak M
  */
 public class Billiards extends Game {
@@ -73,7 +76,7 @@ public class Billiards extends Game {
     private SpriteBatch batch;
     private LaunchMenu launchMenu;
     private SettingsMenu settingsMenu;
-    private Texture table, background, tableMask, person, arrow;
+    private Texture table, background, tableMask, person, arrow, mover;
     private PoolStick stick;
     private LinkedList<Ball> balls; 
     private Ball cueBall;
@@ -95,9 +98,11 @@ public class Billiards extends Game {
     private BitmapFont font;
     private boolean isOver = false;
     private  boolean debugLines = false;
+    private final boolean drawPrediction = true;
     private LinkedList<Ball> ballsPotted;
-    private HashMap<Integer, Texture> ballIcons;
+    private HashMap<String, Texture> ballIcons;
     private Label winLabel;
+    private Vector2[] tableEdges;
 
 
     /**
@@ -125,13 +130,14 @@ public class Billiards extends Game {
         settingsMenu = new SettingsMenu(this, background);
         this.setScreen(launchMenu); // enable launch menu 
         this.getScreen().show();
-
+        // System.out.println(circleLineIntersect(new Vector2(1,1), new Vector2(-4,1), new Circle(-2,-2,1)));
 
         // Game and Texture initializtion
         batch = new SpriteBatch();
         table = new Texture("stolenTableCropped.png");
         stick = new PoolStick(new Texture("pool stick.png"), 450f , 300f, this);
         tableMask = new Texture("TableMask.png");
+        mover = new Texture("mover.png");
         game = new GameProcessor(this);
         font = new BitmapFont();
         arrow = new Texture("turnArrow.png");
@@ -150,7 +156,7 @@ public class Billiards extends Game {
         modelBatch = new ModelBatch();
         ballIcons = new HashMap<>();
         for (int i = 1; i <= 15; i++) {
-            ballIcons.put(i, new Texture("ball_" + i + ".png"));
+            ballIcons.put(i + "", new Texture("ball_" + i + ".png"));
         }
         LabelStyle labelStyle = new LabelStyle(); 
         labelStyle.background = Billiards.getDrawable("blue.png");
@@ -255,6 +261,7 @@ public class Billiards extends Game {
         for (int i = 0; i < tableOutline.length; i++) {
             tableOutline[i] = tableOutline[i].scl(Ball.SCALE_INV);
         }
+        tableEdges = tableOutline;
         border.createLoop(tableOutline);
         BodyDef bd = new BodyDef();
         bd.type = BodyType.StaticBody;
@@ -333,12 +340,12 @@ public class Billiards extends Game {
             
         }
         for (Ball ball : p1.getBalls()) {
-            batch.draw(ballIcons.get(ball.getNum()), 100 + num * 38, HEIGHT - 80, 32, 32);
+            batch.draw(ballIcons.get(ball.getNum() + ""), 100 + num * 38, HEIGHT - 80, 32, 32);
             num++;
         }
         int num2 = 0;
         for (Ball ball : p2.getBalls()) {
-            batch.draw(ballIcons.get(ball.getNum()), 600 + num2 * 38, HEIGHT - 80, 32, 32);
+            batch.draw(ballIcons.get(ball.getNum() + ""), 600 + num2 * 38, HEIGHT - 80, 32, 32);
             num2++;
         }
 
@@ -377,6 +384,9 @@ public class Billiards extends Game {
         }
         else {
             turnUpdated = false;
+        }
+        if (cueBall.isMoveable()) {
+            batch.draw(mover, cueBall.getCenter().x - 20, cueBall.getCenter().y - 20, 40, 40);
         }
         batch.end();
         modelBatch.begin(camera);
@@ -466,7 +476,40 @@ public class Billiards extends Game {
             }
         }
         // System.out.println(Gdx.graphics.getFramesPerSecond());
-
+        // Prediction code that doesnt work
+        // Circle vBall = new Circle(cueBall.getCircle());
+        // Vector2 finalPoint;
+        // double precision = 1;
+        // int k = 0;
+        // while(drawPrediction && k < 4000) {
+        //     boolean broken = false;
+        //     for (Ball ball : balls) {
+        //         Circle c = ball.getCircle();
+        //         if (ball != cueBall && vBall.overlaps(c)) {
+        //             double ang = Math.atan2(c.y - vBall.y, c.x - vBall.x);
+        //             double dist = (20 - ball.getCenter().dst(vBall.x, vBall.y)) * 0.5;
+        //             vBall.x -= (float) (dist*Math.cos(ang)); 
+        //             vBall.y -= (float) (dist*Math.sin(ang));
+        //             broken = true;
+        //             break;
+        //         }
+        //     }
+        //     if (broken) {
+        //         break;
+        //     }
+        //     for (int i = 0; i < tableEdges.length - 1; i++) {
+        //         if (circleLineIntersect(tableEdges[i], tableEdges[i+1], vBall)) {
+        //             break;
+        //         }
+        //     }
+        //     if(broken) {
+        //         break;
+        //     }
+        //     double rad = Math.toRadians(stick.getRotation());
+        //     vBall.x += (float) (precision*Math.cos(rad)); 
+        //     vBall.y += (float) (precision*Math.sin(rad));
+        // }
+        // drawShape.circle(vBall.x, vBall.y, vBall.radius);
         drawShape.end();
         drawShape.begin(ShapeType.Filled);
         drawShape.end();
@@ -475,6 +518,25 @@ public class Billiards extends Game {
         stage.draw();
         lastTime = currentTime;
     }
+
+    // unused method for calculating collisions
+    // public static boolean circleLineIntersect(Vector2 p1, Vector2 p2 ,Circle circle)
+    // {
+    //     float r = circle.radius;
+    //     p1.x -= circle.x;
+    //     p1.y -= circle.y;
+    //     p2.x -= circle.x;
+    //     p2.y -= circle.y;
+    //     float a = (p2.x - p1.x)*(p2.x - p1.x) + (p2.y - p1.y)*(p2.y - p1.y);
+    //     float b = 2*(p1.x*(p2.x - p1.x) + p1.y*(p2.y - p1.y));
+    //     float c = p1.x*p1.x + p1.y*p1.y - r*r;
+    //     float disc = b*b - 4*a*c;
+    //     if(disc <= 0) return false;
+    //     double sqrtdisc = Math.sqrt(disc);
+    //     double t1 = (-b + sqrtdisc)/(2*a);
+    //     double t2 = (-b - sqrtdisc)/(2*a);
+    //     return (0 < t1 && t1 < 1) || (0 < t2 && t2 < 1);
+    // }
     
     /**
      * Sets the volume of the game
@@ -510,6 +572,11 @@ public class Billiards extends Game {
         this.setScreen(launchMenu);
     }
 
+    /**
+     * Static helper method for GUI classes
+     * @param fileName filename of Texture
+     * @return Texture as a drawable
+     */
     public static Drawable getDrawable(String fileName) {
         return (Drawable)(new TextureRegionDrawable(new TextureRegion(new Texture(fileName))));
     }
@@ -658,7 +725,7 @@ public class Billiards extends Game {
                 return;
             }
             if ((contact.getFixtureA().getShape() instanceof ChainShape) || (contact.getFixtureB().getShape() instanceof ChainShape)) {
-                cushionSound.play(v);
+                cushionSound.play(v * 0.75f);
             } else {//if (contact.getFixtureA().getBody().getLinearVelocity() < V_MIN){
                 ballSound.play(v);
             }

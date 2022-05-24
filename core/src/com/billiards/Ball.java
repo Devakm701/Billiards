@@ -66,7 +66,7 @@ public class Ball implements Comparable<Ball>{
         ballBody.setTransform(x * SCALE_INV, y * SCALE_INV, ballBody.getAngle());
         // ballBody.setLinearVelocity(new Vector2(0, 0));
         ballShine.setPosition(x - RADIUS_PX, y - RADIUS_PX);
-        ball3D.transform.setTranslation(mapX(x), mapY(y), 0);
+        ball3D.transform.setTranslation(x / 10f - 45f, y / 10f - 30f, 0);
         if (ballNum == 0){
             billiardsGame.movePoolStick(new Vector2(x, y));
         }
@@ -102,7 +102,7 @@ public class Ball implements Comparable<Ball>{
         float dist = center.dst(x, y);
         Vector3 axis = new Vector3((float)(Math.cos(ang)), (float)(Math.sin(ang)), 0);
         ball3D.transform.rotate(axis, (float) Math.toDegrees(dist / RADIUS_PX));
-        ball3D.transform.setTranslation(mapX(x), mapY(y), 0);
+        ball3D.transform.setTranslation(x / 10f - 45f, y / 10f - 30f, 0);
 
         
         
@@ -114,7 +114,7 @@ public class Ball implements Comparable<Ball>{
         ballShine.setPosition(x - RADIUS_PX, y - RADIUS_PX);
         center.x = x;
         center.y = y;
-        if (Math.abs(vBall.x) < LIMIT && Math.abs(vBall.y) < LIMIT && Math.abs(vAngle) < LIMIT) {
+        if (Math.abs(vBall.x) < LIMIT +  0.05 && Math.abs(vBall.y) < LIMIT+  0.05 && Math.abs(vAngle) < LIMIT +  0.05) {
             ballBody.setLinearVelocity(new Vector2(0, 0));
             ballBody.setAngularVelocity(0);
             isMoving = false;
@@ -199,6 +199,13 @@ public class Ball implements Comparable<Ball>{
         return false;
     }
     
+    /**
+     * Getter for whether or not the ball is moveable
+     * @return true if ball is moveable else false
+     */
+    public boolean isMoveable() {
+        return moveable;
+    }
 
     /**
      * Draws the shadow underneath the ball
@@ -239,54 +246,86 @@ public class Ball implements Comparable<Ball>{
         return center;
     }
 
-    
+    /**
+     * Method for updating the visibility of a ball
+     * @param visibility true for visible false to hide
+     */
     public void setVisible(boolean visibility) {
         visible = visibility;
     }
 
     /**
      * Returns if ball is visible
+     * @return true if visible false if hidden
      */
     public boolean isVisible(){
         return visible;
     }
 
+    /**
+     * Getter for the model of a Ball
+     * @return the balls model as a modelinstance
+     */
     public ModelInstance getModel() {
         return ball3D;
     }
 
+    /**
+     * Update whether or not the ball can be moved using the cursor
+     * @param moveable true for can be moved false for cant be moved
+     */
     public void setMoveable(boolean moveable) {
         this.moveable = moveable;
     }
 
     /**
      * Getter method for the ball number
+     * @return the balls number
      */
     public int getNum() {
         return ballNum;
     }
 
+    /**
+     * Getter for the box2D body of a ball. Used for modifying the balls behavior in the box2D world
+     * @return the balls body
+     */
     public Body getBody() {
         return ballBody;
     } 
 
+    /**
+     * Used for updating when the ball is moving
+     * @param moving true if the ball is moving false if the ball is not moving
+     */
     public void setMoving(boolean moving) {
         moving = false;
     }
-    
-    private float mapX(float x) {
-        return x / 10f - 45f;
-    }
 
-    private float mapY(float y) {
-        return y / 10f - 30f;
-    }
-
+    /**
+     * Converts the ball into a string
+     * @return 
+     */
     public String toString() {
         return ballNum + "";
     }
 
+    /**
+     * Compares one ball to another
+     * @return a negative number if this ball is smaller, 0 if this ball is equal and a positive number if this one is greater 
+     */
     public int compareTo(Ball other) {
         return ballNum - other.ballNum;
+    }
+
+    /**
+     * Checks if this ball is equal to another ball
+     * @return true if equal false if not equal
+     */
+    public boolean equals(Object other) {
+        if (!(other instanceof Ball)) {
+            return false;
+        }
+        return ((Ball)other).getNum() == ballNum;
     }
 }
