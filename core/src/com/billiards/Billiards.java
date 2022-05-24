@@ -59,6 +59,8 @@ import com.badlogic.gdx.utils.JsonReader;
  * the game and updates the physics world. It opens a new screen when necessary and can play specific sounds.
  * Serves as a bridge for all of the other classes. Extends the application adapter class for the library.
  * @author Devak M
+ * @version 5/23/22
+ * 
  */
 public class Billiards extends Game {
     public static final int WIDTH = 900;
@@ -192,7 +194,7 @@ public class Billiards extends Game {
         CircleShape ballCircle = new CircleShape();
         ballCircle.setRadius(Ball.RADIUS_M);
         fixDef.shape = ballCircle;
-        fixDef.restitution = 0.5f; // restitution is how much of the speed remains after a collision
+        fixDef.restitution = 0.66f; // restitution is how much of the speed remains after a collision
         //fixDef.friction = 0.1f;
         fixDef.friction = 0.1f;
         fixDef.density = 1f;

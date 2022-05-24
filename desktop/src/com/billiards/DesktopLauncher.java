@@ -7,6 +7,11 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.billiards.*;
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
+/**
+ * Launcher class that comes with Libgdx
+ * @author none
+ * @version 05/23/22
+ */
 public class DesktopLauncher {
     public static void main (String[] arg) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();

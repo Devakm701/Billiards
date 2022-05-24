@@ -2,21 +2,21 @@ package com.billiards;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
-import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 
 /**
- * Represents a ball
- * 
+ * Represents a ball. Stores a sprite that can be drawn to the 
+ * screen. Holds the body for the physics engine .Location and 
+ * velocity can be updated. Can be moved using cursor or method.
+ * @author Devak M
+ * @version 5/23/22
  */
 public class Ball implements Comparable<Ball>{
     public static final float RADIUS_PX = 10f;
@@ -45,7 +45,17 @@ public class Ball implements Comparable<Ball>{
     float yRad = 0f;
 
     
-
+    /**
+     * Constructs the ball with the necessary params
+     * @param initX initial x coord
+     * @param initY initial y coord
+     * @param billiards main class for accessing methods
+     * @param fileName filename for the shine of the ball
+     * @param body Box2D body for the ball
+     * @param ballNum numerical value of the ball
+     * @param shadow Sprite that represents the shadow of the ball
+     * @param instance 3D model of the ball
+     */
     public Ball(float initX, float initY,Billiards billiards , String fileName, Body body, int ballNum, Sprite shadow, ModelInstance instance) { //add after balls are properly implemented
         ballShine = new Sprite(new Texture(fileName));
         ballShine.setAlpha(0.8f);
@@ -62,6 +72,11 @@ public class Ball implements Comparable<Ball>{
         
     }
 
+    /**
+     * Moves the ball to the desired x and y coordinates (IN PIXELS)
+     * @param x coord in pixels
+     * @param y coord in pixels
+     */
     public void move(float x, float y) {
         ballBody.setTransform(x * SCALE_INV, y * SCALE_INV, ballBody.getAngle());
         // ballBody.setLinearVelocity(new Vector2(0, 0));
@@ -74,10 +89,18 @@ public class Ball implements Comparable<Ball>{
         center.y = y;
     }
 
+    /**
+     * Returns the sprite of the Ball
+     * @return the balls sprite
+     */
     public Sprite getSprite() {
         return ballShine;
     }
 
+    /**
+     * Returns a circle that represents the balls in 2D space
+     * @return a Cirle object that holds the balls basic info
+     */
     public Circle getCircle() {
         ballCircle.setPosition(center);
         return ballCircle;
@@ -304,7 +327,7 @@ public class Ball implements Comparable<Ball>{
 
     /**
      * Converts the ball into a string
-     * @return 
+     * @return the string representation of the ball
      */
     public String toString() {
         return ballNum + "";
@@ -312,6 +335,7 @@ public class Ball implements Comparable<Ball>{
 
     /**
      * Compares one ball to another
+     * @param other The ball to compare to 
      * @return a negative number if this ball is smaller, 0 if this ball is equal and a positive number if this one is greater 
      */
     public int compareTo(Ball other) {
@@ -320,6 +344,7 @@ public class Ball implements Comparable<Ball>{
 
     /**
      * Checks if this ball is equal to another ball
+     * @param other the Ball to check for equivalency
      * @return true if equal false if not equal
      */
     public boolean equals(Object other) {
