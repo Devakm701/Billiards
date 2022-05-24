@@ -192,6 +192,9 @@ public class PoolStick extends Sprite {
     private void launchCueBall(float v) {
         v = v*v*v;//(float)Math.pow(v, 3); // remaps v between 0 and 1 from linear to exponential curve, gives more natural feeling shots, lower b is closer to linear
         v *= 2000 * Ball.SCALE_INV;
+        if (billiards.getTurnNum() == 1) {
+            v*=4;
+        }
         double rad = Math.toRadians(getRotation());
         billiards.playCueSound();
         cueBall.setMoveable(false);

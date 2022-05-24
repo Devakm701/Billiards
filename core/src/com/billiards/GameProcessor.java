@@ -57,6 +57,7 @@ public class GameProcessor {
                 } else if (numTurns > 1) {
                     boolean solid = num < 8 && num != 0;
                     turn.setType(solid); //is there autoboxing
+                    type = turn.getSolid();
                     getOppositePlayer(turn).setType(!solid);
                     if (solid) {
                         solids = turn;
@@ -181,6 +182,14 @@ public class GameProcessor {
         return turn;
     }
 
+    /**
+     * returns the number of the turn
+     * @return the turn number
+     */
+    public int getTurnNum() {
+        return numTurns;
+    }
+     
     /**
      * helper method for game logic for turn, win, and assignment
      * @param turn which players turn

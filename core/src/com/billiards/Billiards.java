@@ -123,7 +123,7 @@ public class Billiards extends Game {
     
     
     /**
-     * Creates and initializes every aspect of the game. Initializes the Launch Menu and the Settings Menus, Textures, Sprites, etc/
+     * Creates and initializes every aspect of the game. Initializes the Launch Menu and the Settings Menus, Textures, Sprites, etc.
      */
     @Override
     public void create () {
@@ -195,7 +195,7 @@ public class Billiards extends Game {
         CircleShape ballCircle = new CircleShape();
         ballCircle.setRadius(Ball.RADIUS_M);
         fixDef.shape = ballCircle;
-        fixDef.restitution = 0.66f; // restitution is how much of the speed remains after a collision
+        fixDef.restitution = 0.5f; // restitution is how much of the speed remains after a collision
         //fixDef.friction = 0.1f;
         fixDef.friction = 0.1f;
         fixDef.density = 1f;
@@ -222,6 +222,7 @@ public class Billiards extends Game {
         Model cueModel = modelLoader.loadModel(Gdx.files.internal("0ball.g3dj"));
         cueBall = new Ball(300, 250, this, "shine2.png", ball, 0, ballShadow, new ModelInstance(cueModel));
         stick.setCueBall(cueBall);
+        cueBall.setMoveable(true);
 
         // Initialize outline
         ChainShape border = new ChainShape();
@@ -353,6 +354,14 @@ public class Billiards extends Game {
         }
 
         batch.draw(table, 450 - table.getWidth() / 2, 0);
+        // if (getTurnNum() == 1) {
+            batch.end();
+            drawShape.begin(ShapeType.Line);
+            drawShape.setColor(128, 128, 128, 0.1f);
+            drawShape.line(300, 104, 300, 396);
+            drawShape.end();
+            batch.begin();
+        // }
         // cueBall.update();
         int ballsMoving = 0;
         for (Ball ball : balls) {
@@ -479,7 +488,7 @@ public class Billiards extends Game {
             }
         }
         // System.out.println(Gdx.graphics.getFramesPerSecond());
-        // Prediction code that doesnt work
+        // // Prediction code that doesnt work
         // Circle vBall = new Circle(cueBall.getCircle());
         // Vector2 finalPoint;
         // double precision = 1;
@@ -818,6 +827,13 @@ public class Billiards extends Game {
         return stick;
     }
 
+    /**
+     * getter for the turn number from the game class
+     * @return turn number 
+     */
+    public int getTurnNum() {
+        return game.getTurnNum();
+    }
     /**
      * Sets the visibility of the Pool Cue
      * @param visibility true for visible and false for hidden

@@ -192,7 +192,10 @@ public class Ball implements Comparable<Ball>{
                 boolean outOfBounds = mouseX < 158 + RADIUS_PX ||  mouseX > 741 - RADIUS_PX ||
                     Billiards.HEIGHT - mouseY < 104 + RADIUS_PX || Billiards.HEIGHT - mouseY > 396 - RADIUS_PX;
 
-
+                if (billiardsGame.getTurnNum() == 1) {
+                    outOfBounds = mouseX < 158 + RADIUS_PX ||  mouseX > 300 ||
+                    Billiards.HEIGHT - mouseY < 104 + RADIUS_PX || Billiards.HEIGHT - mouseY > 396 - RADIUS_PX;
+                }
                 for (Ball b : billiardsGame.getBallList()) {
                     if (b.getNum() == 0) {
                         continue;
