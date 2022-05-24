@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 /**
  * Represents the score, assigned ball, and data for a player
+ * @version 2022 May 23
  */
 public class Player {
     private Boolean solids = null;
@@ -54,6 +55,7 @@ public class Player {
 
     /**
      * returns whether or not 8-Ball is needed for the win
+     * @return is 8-Ball needed for win
      */
     public boolean is8BallAvailable() {
         return eightBallAvailable;
@@ -61,6 +63,7 @@ public class Player {
 
     /**
      * returns list of potted balls
+     * @return list of potted balls
      */
     public LinkedList<Ball> getBalls() {
         return ballsPotted;
@@ -68,6 +71,7 @@ public class Player {
 
     /**
      * returns player name
+     * @return player name
      */
     public String getName() {
         return playerName;

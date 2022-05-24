@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 /**
  * Represents the game rules logic for an 8-Ball Pool game
+ * @version 2022 May 23
  */
 public class GameProcessor {
 
@@ -123,6 +124,7 @@ public class GameProcessor {
 
     /**
      * returns list of striped balls that are out
+     * @return list of stripes that are out
      */
     public LinkedList<Ball> getStripesOutList() {
         return stripesOut;
@@ -131,6 +133,7 @@ public class GameProcessor {
     /**
      * returns list of solid balls that are out
      * does not include 8 ball or cue ball
+     * @return list of solids balls that are out
      */
     public LinkedList<Ball> getSolidsOutList() {
         return solidsOut;
@@ -138,6 +141,7 @@ public class GameProcessor {
 
     /**
      * returns player that is assigned to stripes
+     * @return player assigned to stripes
      */
     public Player getStripesPlayer() {
         return stripes;
@@ -145,6 +149,7 @@ public class GameProcessor {
 
     /**
      * returns player that is assigned to solids
+     * @return player assigned to solids
      */
     public Player getSolidsPlayer() {
         return solids;
@@ -152,6 +157,7 @@ public class GameProcessor {
 
     /**
      * returns player 1
+     * @return player 1
      */
     public Player getPlayer1() {
         return player1;
@@ -159,6 +165,7 @@ public class GameProcessor {
 
     /**
      * returns player 2
+     * @return player 2
      */
     public Player getPlayer2() {
         return player2;
@@ -166,6 +173,7 @@ public class GameProcessor {
 
     /**
      * returns which the player whose turn it is
+     * @return which player's turn
      */
     public Player getTurn() {
         return turn;
@@ -173,6 +181,8 @@ public class GameProcessor {
 
     /**
      * helper method for game logic for turn, win, and assignment
+     * @param turn which players turn
+     * @return opposite player of player that has the turn
      */
     public Player getOppositePlayer(Player turn) {
         if (turn == player1) {

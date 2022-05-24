@@ -28,6 +28,7 @@ import com.badlogic.gdx.utils.Align;
 
 /**
  * Represents a settings menu
+ * @version 2022 May 23
  */
 public class SettingsMenu implements Screen {
     private Billiards billiardsGame;
@@ -310,6 +311,7 @@ public class SettingsMenu implements Screen {
      * Helper method for tables
      * @param left left side of button
      * @param right right side of button
+     * @return output of the new table
      */
     private Table createTable2(TextButton left, TextButton right) {
         Table output = new Table();
