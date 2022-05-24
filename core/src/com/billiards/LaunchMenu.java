@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
  * Represents the launch menu of the game
+ * @version 2022 May 23
  */
 public class LaunchMenu implements Screen {
 

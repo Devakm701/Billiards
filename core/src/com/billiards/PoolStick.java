@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector2;
  * It can spin by following the cursor. 
  * Holding left click will charge the ball which changes striking strength.
  * @author Devak M
+ * @version 2022 May 23
  */
 public class PoolStick extends Sprite {
     

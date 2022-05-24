@@ -59,6 +59,7 @@ import com.badlogic.gdx.utils.JsonReader;
  * the game and updates the physics world. It opens a new screen when necessary and can play specific sounds.
  * Serves as a bridge for all of the other classes. Extends the application adapter class for the library.
  * @author Devak M
+ * @version 2022 May 23
  */
 public class Billiards extends Game {
     public static final int WIDTH = 900;
