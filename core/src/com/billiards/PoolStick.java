@@ -114,8 +114,8 @@ public class PoolStick extends Sprite {
                 }
                 setRotation(rotation);
                 // System.out.println(super.getRotation()); // direction ouput
-                super.draw(batch);
             }
+            super.draw(batch);
         } 
         /*---- Resets stick upon stick release ---*/
         else {

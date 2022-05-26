@@ -192,8 +192,6 @@ public class SettingsMenu implements Screen {
                     flipOff.setChecked(false);
                     Billiards.stickFlip = true;
                     buttonChange();
-                } else if (!flipOff.isChecked() && initialized) {
-                    flipOn.setChecked(true);
                 }
             }
         });
@@ -204,11 +202,9 @@ public class SettingsMenu implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 if (flipOff.isChecked() && initialized) {
                     flipOn.setChecked(false);
-                    Billiards.stickFlip = true;
+                    Billiards.stickFlip = false;
                     buttonChange();
-                } else if (!flipOn.isChecked() && initialized) {
-                    flipOff.setChecked(true);
-                }
+                } 
             }
         });
         Table flipTable = createTable2(flipOff, flipOn);
@@ -238,13 +234,13 @@ public class SettingsMenu implements Screen {
           });
         
         // Music Sound
-        Label musicLabel = new Label("  Music", labelStyle);
+        Label musicLabel = new Label("  Sound", labelStyle);
         soundOffButton = new TextButton("Off", style);
         soundOffButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (soundOffButton.isChecked() && initialized) {
-                    billiardsGame.stopAkashSound();
+                    billiardsGame.playAkashSound();
                     soundOnButton.setChecked(false);
                     billiardsGame.getAkash().setPan(1f, 1f);
                     buttonChange();
@@ -257,7 +253,7 @@ public class SettingsMenu implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (soundOnButton.isChecked() && initialized) {
-                    billiardsGame.playAkashSound();
+                    billiardsGame.stopAkashSound();
                     soundOffButton.setChecked(false);
                     billiardsGame.getAkash().setPan(1f, 0.3f);
                     buttonChange();
@@ -286,9 +282,11 @@ public class SettingsMenu implements Screen {
 
         // Initialize Default Settings
         hiGraphicsButton.setChecked(true);
-        soundOffButton.setChecked(true);
-        hoverButton.setChecked(true);
-        flipOn.setChecked(true);
+        soundOnButton.setChecked(true);
+        hoverButton.setChecked(Billiards.altControl);
+        mouseButton.setChecked(!Billiards.altControl);
+        flipOn.setChecked(Billiards.stickFlip);
+        flipOff.setChecked(!Billiards.stickFlip);
         initialized = true;
     }
 
